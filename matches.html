@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Friends - Connect</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#fff5f8;
+    color:#222;
+    padding-bottom:82px;
+}
+
+/* HEADER */
+
+.header{
+    height:70px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 18px;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    color:#e91e63;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.back-btn{
+    border:none;
+    background:#ffe4ed;
+    color:#e91e63;
+    padding:10px 18px;
+    border-radius:25px;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* PAGE */
+
+.container{
+    width:100%;
+    max-width:650px;
+    margin:auto;
+    padding:22px 16px 30px;
+}
+
+.page-title{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    margin:8px 0 5px;
+}
+
+.page-title span{
+    color:#e91e63;
+}
+
+.page-subtitle{
+    text-align:center;
+    color:#777;
+    font-size:14px;
+    margin-bottom:20px;
+}
+
+/* COUNT */
+
+.match-count{
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+    border-radius:18px;
+    padding:15px;
+    text-align:center;
+    font-size:16px;
+    font-weight:bold;
+    margin-bottom:18px;
+    box-shadow:0 7px 20px rgba(233,30,99,.18);
+}
+
+/* REFRESH */
+
+.refresh-btn{
+    width:100%;
+    height:50px;
+    border:none;
+    border-radius:27px;
+    background:white;
+    color:#e91e63;
+    border:1.5px solid #ffd0df;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.refresh-btn:disabled{
+    opacity:.6;
+}
+
+/* CARD */
+
+.match-card{
+    background:white;
+    border-radius:25px;
+    padding:20px 16px;
+    margin-bottom:18px;
+    box-shadow:0 7px 25px rgba(0,0,0,.08);
+    border:1px solid #ffe5ed;
+}
+
+.match-photo{
+    width:125px;
+    height:125px;
+    border-radius:50%;
+    object-fit:cover;
+    display:block;
+    margin:auto;
+    border:5px solid #ffe1eb;
+    background:#f5f5f5;
+}
+
+.match-name{
+    text-align:center;
+    font-size:23px;
+    font-weight:bold;
+    margin-top:13px;
+    color:#222;
+}
+
+.match-status{
+    text-align:center;
+    font-size:13px;
+    margin-top:5px;
+    font-weight:bold;
+}
+
+.status-online{
+    color:#16a34a;
+}
+
+.status-offline{
+    color:#888;
+}
+
+.match-info{
+    text-align:center;
+    color:#555;
+    font-size:15px;
+    line-height:1.8;
+    margin-top:10px;
+}
+
+.match-date{
+    text-align:center;
+    color:#aaa;
+    font-size:12px;
+    margin-top:7px;
+}
+
+/* BUTTONS */
+
+.match-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:17px;
+}
+
+.chat-btn,
+.profile-btn{
+    height:48px;
+    border:none;
+    border-radius:25px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.chat-btn{
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+}
+
+.profile-btn{
+    background:#fff0f5;
+    color:#e91e63;
+    border:1px solid #ffd1df;
+}
+
+/* EMPTY */
+
+.empty-box{
+    background:white;
+    border-radius:25px;
+    padding:45px 22px;
+    text-align:center;
+    box-shadow:0 7px 25px rgba(0,0,0,.08);
+}
+
+.empty-heart{
+    font-size:65px;
+}
+
+.empty-title{
+    font-size:23px;
+    font-weight:bold;
+    margin-top:12px;
+}
+
+.empty-text{
+    color:#777;
+    font-size:15px;
+    line-height:1.7;
+    margin-top:10px;
+}
+
+.find-btn{
+    border:none;
+    background:#e91e63;
+    color:white;
+    padding:13px 25px;
+    border-radius:25px;
+    font-size:15px;
+    font-weight:bold;
+    margin-top:18px;
+    cursor:pointer;
+}
+
+/* LOADING */
+
+.loading{
+    background:white;
+    border-radius:22px;
+    padding:40px 20px;
+    text-align:center;
+    color:#777;
+    box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+/* ERROR */
+
+.error-box{
+    background:#fff0f3;
+    color:#dc2626;
+    border-radius:20px;
+    padding:22px;
+    text-align:center;
+    line-height:1.7;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:76px;
+    background:white;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:999;
+    box-shadow:0 -4px 18px rgba(0,0,0,.08);
+}
+
+.nav-item{
+    text-decoration:none;
+    color:#777;
+    text-align:center;
+    font-size:12px;
+    min-width:60px;
+}
+
+.nav-icon{
+    display:block;
+    font-size:25px;
+    margin-bottom:3px;
+}
+
+.nav-item.active{
+    color:#e91e63;
+    font-weight:bold;
+}
+
+/* MOBILE */
+
+@media(max-width:450px){
+
+    .page-title{
+        font-size:27px;
+    }
+
+    .match-photo{
+        width:115px;
+        height:115px;
+    }
+
+    .match-name{
+        font-size:21px;
+    }
+
+    .chat-btn,
+    .profile-btn{
+        font-size:14px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+
+    <div class="logo">
+        💖 Connect
+    </div>
+
+    <button
+        class="back-btn"
+        onclick="window.location.href='users.html'">
+
+        ← Back
+
+    </button>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+    <div class="page-title">
+        💕 My <span>Friends</span>
+    </div>
+
+    <div class="page-subtitle">
+        जिन लोगों के साथ आपका mutual match हुआ है
+    </div>
+
+
+    <div
+        id="matchCount"
+        class="match-count">
+
+        💕 Matches load हो रहे हैं...
+
+    </div>
+
+
+    <button
+        id="refreshButton"
+        class="refresh-btn">
+
+        🔄 Friends Refresh करें
+
+    </button>
+
+
+    <div id="matches">
+
+        <div class="loading">
+            💕 आपके Friends load हो रहे हैं...
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+    <a
+        href="index.html"
+        class="nav-item">
+
+        <span class="nav-icon">🏠</span>
+        Home
+
+    </a>
+
+
+    <a
+        href="users.html"
+        class="nav-item">
+
+        <span class="nav-icon">🔎</span>
+        Find People
+
+    </a>
+
+
+    <a
+        href="matches.html"
+        class="nav-item active">
+
+        <span class="nav-icon">❤️</span>
+        Friends
+
+    </a>
+
+
+    <a
+        href="messages.html"
+        class="nav-item">
+
+        <span class="nav-icon">💬</span>
+        Messages
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        class="nav-item">
+
+        <span class="nav-icon">👤</span>
+        Account
+
+    </a>
+
+</nav>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+<script>
+
+let currentUser = null;
+
+let blockedUsers = new Set();
+
+
+/* =========================
+START
+========================= */
+
+document.addEventListener(
+"DOMContentLoaded",
+async function(){
+
+    const matchesBox =
+        document.getElementById("matches");
+
+
+    if(typeof supabaseClient === "undefined"){
+
+        matchesBox.innerHTML = `
+            <div class="error-box">
+                ❌ Supabase connection नहीं मिला।
+            </div>
+        `;
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient.auth.getUser();
+
+
+    if(error || !data || !data.user){
+
+        window.location.href = "login.html";
+
+        return;
+    }
+
+
+    currentUser = data.user;
+
+
+    await loadBlockedUsers();
+
+    await loadMatches();
+
+
+    document
+    .getElementById("refreshButton")
+    .onclick =
+    async function(){
+
+        this.disabled = true;
+
+        this.textContent =
+            "⏳ Loading...";
+
+
+        await loadBlockedUsers();
+
+        await loadMatches();
+
+
+        this.disabled = false;
+
+        this.textContent =
+            "🔄 Friends Refresh करें";
+
+    };
+
+});
+
+
+/* =========================
+BLOCKED USERS
+========================= */
+
+async function loadBlockedUsers(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+    .from("blocks")
+    .select("blocked_user_id")
+    .eq(
+        "blocker_id",
+        currentUser.id
+    );
+
+
+    if(error){
+
+        console.log(
+            "Blocked users error:",
+            error.message
+        );
+
+        blockedUsers = new Set();
+
+        return;
+    }
+
+
+    blockedUsers =
+        new Set(
+            (data || [])
+            .map(
+                item =>
+                item.blocked_user_id
+            )
+        );
+
+}
+
+
+/* =========================
+LOAD MATCHES
+========================= */
+
+async function loadMatches(){
+
+    const matchesBox =
+        document.getElementById("matches");
+
+    const countBox =
+        document.getElementById("matchCount");
+
+
+    matchesBox.innerHTML = `
+        <div class="loading">
+            💕 Friends load हो रहे हैं...
+        </div>
+    `;
+
+
+    countBox.textContent =
+        "💕 Friends check हो रहे हैं...";
+
+
+    const {
+        data: matches,
+        error: matchError
+    } =
+    await supabaseClient
+    .from("matches")
+    .select(
+        "id,user1_id,user2_id,created_at"
+    )
+    .or(
+        "user1_id.eq." +
+        currentUser.id +
+        ",user2_id.eq." +
+        currentUser.id
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(matchError){
+
+        countBox.textContent =
+            "⚠️ Match error";
+
+
+        matchesBox.innerHTML = `
+            <div class="error-box">
+                ❌ Friends load नहीं हुए।<br><br>
+                ${escapeHtml(matchError.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if(!matches || matches.length === 0){
+
+        countBox.textContent =
+            "💕 Total Friends: 0";
+
+        showNoMatches();
+
+        return;
+    }
+
+
+    matchesBox.innerHTML = "";
+
+
+    let shownCount = 0;
+
+
+    for(const match of matches){
+
+        const otherUserId =
+            match.user1_id === currentUser.id
+            ? match.user2_id
+            : match.user1_id;
+
+
+        /* BLOCK CHECK */
+
+        if(blockedUsers.has(otherUserId)){
+
+            continue;
+        }
+
+
+        /* PROFILE */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select(
+            "id,name,photo_url,age,gender,city,profession,bio"
+        )
+        .eq(
+            "id",
+            otherUserId
+        )
+        .maybeSingle();
+
+
+        if(profileError){
+
+            console.log(
+                "Profile error:",
+                profileError.message
+            );
+
+            continue;
+        }
+
+
+        if(!profile){
+
+            continue;
+        }
+
+
+        createMatchCard(
+            profile,
+            match.created_at,
+            matchesBox
+        );
+
+
+        shownCount++;
+
+    }
+
+
+    countBox.textContent =
+        "💕 Total Friends: " +
+        shownCount;
+
+
+    if(shownCount === 0){
+
+        showNoMatches();
+
+    }
+
+}
+
+
+/* =========================
+CREATE CARD
+========================= */
+
+function createMatchCard(
+    profile,
+    createdAt,
+    matchesBox
+){
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "match-card";
+
+
+    /* PHOTO */
+
+    const photo =
+        document.createElement("img");
+
+    photo.className =
+        "match-photo";
+
+
+    photo.src =
+        profile.photo_url ||
+        "https://via.placeholder.com/300?text=No+Photo";
+
+
+    photo.alt =
+        profile.name || "Profile";
+
+
+    photo.onerror =
+    function(){
+
+        this.src =
+        "https://via.placeholder.com/300?text=No+Photo";
+
+    };
+
+
+    card.appendChild(photo);
+
+
+    /* NAME */
+
+    const name =
+        document.createElement("div");
+
+    name.className =
+        "match-name";
+
+    name.textContent =
+        "💕 " +
+        (profile.name || "User");
+
+
+    card.appendChild(name);
+
+
+    /* STATUS */
+
+    const status =
+        document.createElement("div");
+
+    status.className =
+        "match-status status-offline";
+
+    status.textContent =
+        "💚 Match";
+
+
+    card.appendChild(status);
+
+
+    /* INFO */
+
+    const info =
+        document.createElement("div");
+
+    info.className =
+        "match-info";
+
+
+    let infoText = "";
+
+
+    if(profile.age){
+
+        infoText +=
+            "🎂 " +
+            profile.age +
+            " वर्ष";
+
+    }
+
+
+    if(profile.gender){
+
+        if(infoText)
+            infoText += " • ";
+
+        infoText +=
+            profile.gender;
+
+    }
+
+
+    if(profile.city){
+
+        if(infoText)
+            infoText += "<br>";
+
+        infoText +=
+            "📍 " +
+            escapeHtml(profile.city);
+
+    }
+
+
+    if(profile.profession){
+
+        if(infoText)
+            infoText += "<br>";
+
+        infoText +=
+            "💼 " +
+            escapeHtml(profile.profession);
+
+    }
+
+
+    info.innerHTML =
+        infoText;
+
+
+    card.appendChild(info);
+
+
+    /* MATCH DATE */
+
+    if(createdAt){
+
+        const dateBox =
+            document.createElement("div");
+
+        dateBox.className =
+            "match-date";
+
+        const date =
+            new Date(createdAt);
+
+
+        dateBox.textContent =
+            "Match हुआ: " +
+            date.toLocaleDateString(
+                "hi-IN",
+                {
+                    day:"numeric",
+                    month:"short",
+                    year:"numeric"
+                }
+            );
+
+
+        card.appendChild(dateBox);
+
+    }
+
+
+    /* BUTTONS */
+
+    const buttons =
+        document.createElement("div");
+
+    buttons.className =
+        "match-buttons";
+
+
+    /* CHAT */
+
+    const chatButton =
+        document.createElement("button");
+
+    chatButton.className =
+        "chat-btn";
+
+    chatButton.textContent =
+        "💬 Chat करें";
+
+
+    chatButton.onclick =
+    function(){
+
+        if(blockedUsers.has(profile.id)){
+
+            alert(
+                "यह User Block है।"
+            );
+
+            return;
+        }
+
+
+        window.location.href =
+            "chat.html?id=" +
+            encodeURIComponent(
+                profile.id
+            ) +
+            "&user=" +
+            encodeURIComponent(
+                profile.name || "User"
+            );
+
+    };
+
+
+    buttons.appendChild(
+        chatButton
+    );
+
+
+    /* PROFILE */
+
+    const profileButton =
+        document.createElement("button");
+
+    profileButton.className =
+        "profile-btn";
+
+    profileButton.textContent =
+        "👤 Profile देखें";
+
+
+    profileButton.onclick =
+    function(){
+
+        if(blockedUsers.has(profile.id)){
+
+            alert(
+                "यह User Block है।"
+            );
+
+            return;
+        }
+
+
+        window.location.href =
+            "view-profile.html?id=" +
+            encodeURIComponent(
+                profile.id
+            );
+
+    };
+
+
+    buttons.appendChild(
+        profileButton
+    );
+
+
+    card.appendChild(buttons);
+
+
+    matchesBox.appendChild(card);
+
+}
+
+
+/* =========================
+NO MATCH
+========================= */
+
+function showNoMatches(){
+
+    const matchesBox =
+        document.getElementById("matches");
+
+
+    matchesBox.innerHTML = `
+
+        <div class="empty-box">
+
+            <div class="empty-heart">
+                💕
+            </div>
+
+            <div class="empty-title">
+                अभी कोई Friend Match नहीं है
+            </div>
+
+            <div class="empty-text">
+
+                लोगों को Like करें।<br>
+
+                जब सामने वाला भी आपको Like करेगा,
+                तब वह आपका Friend Match बन जाएगा।
+
+            </div>
+
+
+            <button
+                class="find-btn"
+                onclick="window.location.href='users.html'">
+
+                🔎 Find People
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+ESCAPE HTML
+========================= */
+
+function escapeHtml(text){
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+
+</html>
