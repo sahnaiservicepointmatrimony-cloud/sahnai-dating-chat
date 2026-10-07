@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Messages - Connect</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding-bottom:82px;
+    font-family:Arial,sans-serif;
+    background:#fff5f8;
+    color:#222;
+}
+
+/* HEADER */
+
+.header{
+    height:70px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 16px;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.logo{
+    color:#e91e63;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.account-btn{
+    border:none;
+    background:#ffe3ed;
+    color:#e91e63;
+    padding:10px 15px;
+    border-radius:24px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* MAIN */
+
+.container{
+    width:100%;
+    max-width:650px;
+    margin:auto;
+    padding:24px 16px 30px;
+}
+
+/* TITLE */
+
+.page-title{
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.page-title h1{
+    margin:0;
+    font-size:30px;
+    color:#222;
+}
+
+.page-title h1 span{
+    color:#e91e63;
+}
+
+.page-title p{
+    margin:7px 0 0;
+    color:#777;
+    font-size:14px;
+}
+
+.conversation-count{
+    display:inline-block;
+    margin-top:14px;
+    background:#ffe0eb;
+    color:#e91e63;
+    padding:8px 17px;
+    border-radius:22px;
+    font-size:13px;
+    font-weight:bold;
+}
+
+/* REFRESH */
+
+.refresh-btn{
+    width:100%;
+    height:48px;
+    margin-bottom:18px;
+    border:1.5px solid #ffd0df;
+    border-radius:25px;
+    background:white;
+    color:#e91e63;
+    font-size:14px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.refresh-btn:disabled{
+    opacity:.6;
+}
+
+/* MESSAGE CARD */
+
+.message-card{
+    background:white;
+    border-radius:22px;
+    padding:14px;
+    margin-bottom:13px;
+    display:flex;
+    align-items:center;
+    gap:13px;
+    box-shadow:0 5px 18px rgba(0,0,0,.07);
+    cursor:pointer;
+    border:1px solid transparent;
+}
+
+.message-card.unread{
+    border:2px solid #f5b0ca;
+    box-shadow:0 7px 22px rgba(233,30,99,.13);
+}
+
+.user-photo{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#ffe1eb;
+    border:3px solid #ffe3ed;
+    flex-shrink:0;
+}
+
+.message-info{
+    flex:1;
+    min-width:0;
+}
+
+.user-name{
+    font-size:19px;
+    font-weight:bold;
+    color:#333;
+    margin-bottom:5px;
+}
+
+.last-message{
+    color:#777;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    margin-bottom:5px;
+}
+
+.message-date{
+    color:#999;
+    font-size:11px;
+}
+
+.message-right{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+}
+
+.arrow{
+    font-size:25px;
+    color:#e91e63;
+}
+
+.unread-badge{
+    min-width:27px;
+    height:27px;
+    padding:0 7px;
+    border-radius:20px;
+    background:#e91e63;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+/* EMPTY */
+
+.empty-box{
+    background:white;
+    border-radius:24px;
+    padding:45px 20px;
+    text-align:center;
+    box-shadow:0 5px 18px rgba(0,0,0,.06);
+}
+
+.empty-icon{
+    font-size:60px;
+    margin-bottom:10px;
+}
+
+.empty-box h2{
+    margin:5px 0 10px;
+    color:#333;
+    font-size:21px;
+}
+
+.empty-box p{
+    margin:0;
+    color:#777;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.find-btn{
+    margin-top:20px;
+    border:none;
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+    padding:13px 25px;
+    border-radius:25px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* LOADING */
+
+.loading{
+    background:white;
+    border-radius:22px;
+    padding:40px 20px;
+    text-align:center;
+    color:#777;
+}
+
+/* ERROR */
+
+.error-box{
+    background:#fff0f3;
+    color:#dc2626;
+    border-radius:20px;
+    padding:22px;
+    text-align:center;
+    line-height:1.6;
+}
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:76px;
+    background:white;
+    border-top:1px solid #eee;
+    box-shadow:0 -4px 18px rgba(0,0,0,.08);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:999;
+}
+
+.nav-item{
+    flex:1;
+    border:none;
+    background:transparent;
+    color:#777;
+    text-align:center;
+    font-size:11px;
+    cursor:pointer;
+    padding:6px 2px;
+}
+
+.nav-icon{
+    display:block;
+    font-size:24px;
+    margin-bottom:3px;
+}
+
+.nav-item.active{
+    color:#e91e63;
+    font-weight:bold;
+}
+
+/* MOBILE */
+
+@media(max-width:450px){
+
+    .logo{
+        font-size:20px;
+    }
+
+    .account-btn{
+        padding:8px 11px;
+        font-size:12px;
+    }
+
+    .user-photo{
+        width:64px;
+        height:64px;
+    }
+
+    .user-name{
+        font-size:18px;
+    }
+
+    .last-message{
+        font-size:13px;
+    }
+
+    .nav-item{
+        font-size:10px;
+    }
+
+    .nav-icon{
+        font-size:22px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+
+    <div class="logo">
+        💖 Connect
+    </div>
+
+    <button
+        class="account-btn"
+        onclick="goAccount()">
+
+        👤 Account
+
+    </button>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h1>
+            💬 <span>Messages</span>
+        </h1>
+
+        <p>
+            अपने Friends के साथ Chat करें
+        </p>
+
+        <span
+            id="conversationCount"
+            class="conversation-count">
+
+            0 Conversations
+
+        </span>
+
+    </div>
+
+
+    <button
+        id="refreshButton"
+        class="refresh-btn">
+
+        🔄 Messages Refresh करें
+
+    </button>
+
+
+    <div id="messagesList">
+
+        <div class="loading">
+            💬 Messages loading...
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+    <button
+        class="nav-item"
+        onclick="goHome()">
+
+        <span class="nav-icon">🏠</span>
+        Home
+
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goFindPeople()">
+
+        <span class="nav-icon">🔎</span>
+        Find People
+
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goFriends()">
+
+        <span class="nav-icon">❤️</span>
+        Friends
+
+    </button>
+
+
+    <button
+        class="nav-item active">
+
+        <span class="nav-icon">💬</span>
+        Messages
+
+    </button>
+
+
+    <button
+        class="nav-item"
+        onclick="goAccount()">
+
+        <span class="nav-icon">👤</span>
+        Account
+
+    </button>
+
+</nav>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+<script>
+
+let currentUser = null;
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        await loadMessagesPage();
+
+
+        document
+        .getElementById("refreshButton")
+        .addEventListener(
+            "click",
+            async function(){
+
+                this.disabled = true;
+
+                this.textContent =
+                    "⏳ Loading...";
+
+                await loadConversations();
+
+                this.disabled = false;
+
+                this.textContent =
+                    "🔄 Messages Refresh करें";
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================
+   LOAD PAGE
+========================= */
+
+async function loadMessagesPage(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+    .auth
+    .getUser();
+
+
+    if(error || !data || !data.user){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    await loadConversations();
+
+}
+
+
+/* =========================
+   LOAD CONVERSATIONS
+========================= */
+
+async function loadConversations(){
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+    const count =
+        document.getElementById(
+            "conversationCount"
+        );
+
+
+    list.innerHTML = `
+        <div class="loading">
+            💬 Conversations load हो रही हैं...
+        </div>
+    `;
+
+
+    const {
+        data:messages,
+        error
+    } =
+    await supabaseClient
+    .from("messages")
+    .select(
+        "id,sender_id,receiver_id,content,created_at,read_at"
+    )
+    .or(
+        "sender_id.eq."+
+        currentUser.id+
+        ",receiver_id.eq."+
+        currentUser.id
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(error){
+
+        count.textContent =
+            "⚠️ Error";
+
+        list.innerHTML = `
+            <div class="error-box">
+                ❌ Messages load नहीं हुए।<br><br>
+                ${escapeHtml(error.message)}
+            </div>
+        `;
+
+        return;
+    }
+
+
+    if(!messages || messages.length === 0){
+
+        count.textContent =
+            "0 Conversations";
+
+        showEmptyMessages();
+
+        return;
+
+    }
+
+
+    /*
+       हर दूसरे user की latest conversation
+       केवल एक बार रखेंगे।
+    */
+
+    const conversations =
+        new Map();
+
+
+    for(const message of messages){
+
+        const otherUserId =
+            message.sender_id === currentUser.id
+            ? message.receiver_id
+            : message.sender_id;
+
+
+        if(!otherUserId){
+
+            continue;
+
+        }
+
+
+        if(!conversations.has(otherUserId)){
+
+            conversations.set(
+                otherUserId,
+                {
+                    lastMessage:message,
+                    unread:0
+                }
+            );
+
+        }
+
+
+        if(
+            message.receiver_id === currentUser.id &&
+            !message.read_at
+        ){
+
+            conversations
+            .get(otherUserId)
+            .unread++;
+
+        }
+
+    }
+
+
+    const conversationArray =
+        Array.from(
+            conversations.entries()
+        );
+
+
+    count.textContent =
+        conversationArray.length +
+        (
+            conversationArray.length === 1
+            ? " Conversation"
+            : " Conversations"
+        );
+
+
+    if(conversationArray.length === 0){
+
+        showEmptyMessages();
+
+        return;
+
+    }
+
+
+    list.innerHTML = "";
+
+
+    for(
+        const [
+            userId,
+            conversation
+        ]
+        of conversationArray
+    ){
+
+        const {
+            data:profile,
+            error:profileError
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select(
+            "id,name,photo_url"
+        )
+        .eq(
+            "id",
+            userId
+        )
+        .maybeSingle();
+
+
+        if(profileError){
+
+            console.log(
+                "Profile error:",
+                profileError.message
+            );
+
+            continue;
+
+        }
+
+
+        if(!profile){
+
+            continue;
+
+        }
+
+
+        createConversationCard(
+            profile,
+            conversation,
+            list
+        );
+
+    }
+
+}
+
+
+/* =========================
+   CREATE MESSAGE CARD
+========================= */
+
+function createConversationCard(
+    profile,
+    conversation,
+    list
+){
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "message-card";
+
+
+    if(conversation.unread > 0){
+
+        card.classList.add(
+            "unread"
+        );
+
+    }
+
+
+    const photo =
+        profile.photo_url ||
+        "https://via.placeholder.com/150?text=User";
+
+
+    const message =
+        conversation.lastMessage;
+
+
+    const unreadBadge =
+        conversation.unread > 0
+        ? `
+            <div class="unread-badge">
+                ${
+                    conversation.unread > 99
+                    ? "99+"
+                    : conversation.unread
+                }
+            </div>
+          `
+        : "";
+
+
+    card.innerHTML = `
+
+        <img
+            class="user-photo"
+            src="${escapeHtml(photo)}"
+            alt="Profile"
+        >
+
+
+        <div class="message-info">
+
+            <div class="user-name">
+                ${escapeHtml(
+                    profile.name || "User"
+                )}
+            </div>
+
+
+            <div class="last-message">
+
+                ${
+                    message.sender_id === currentUser.id
+                    ? "आप: "
+                    : ""
+                }
+
+                ${escapeHtml(
+                    message.content || "New message"
+                )}
+
+            </div>
+
+
+            <div class="message-date">
+                ${formatDate(
+                    message.created_at
+                )}
+            </div>
+
+        </div>
+
+
+        <div class="message-right">
+
+            <div class="arrow">
+                ➜
+            </div>
+
+            ${unreadBadge}
+
+        </div>
+
+    `;
+
+
+    card.addEventListener(
+        "click",
+        function(){
+
+            openChat(
+                profile.name || "User",
+                profile.id
+            );
+
+        }
+    );
+
+
+    list.appendChild(card);
+
+}
+
+
+/* =========================
+   EMPTY
+========================= */
+
+function showEmptyMessages(){
+
+    const list =
+        document.getElementById(
+            "messagesList"
+        );
+
+
+    list.innerHTML = `
+
+        <div class="empty-box">
+
+            <div class="empty-icon">
+                💬
+            </div>
+
+            <h2>
+                अभी कोई Conversation नहीं है
+            </h2>
+
+            <p>
+                किसी Friend से Chat शुरू करें।
+                आपकी बातचीत यहाँ दिखाई देगी।
+            </p>
+
+            <button
+                class="find-btn"
+                onclick="goFindPeople()">
+
+                🔎 Find People
+
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   OPEN CHAT
+========================= */
+
+function openChat(name,id){
+
+    window.location.href =
+        "chat.html?user="+
+        encodeURIComponent(name)+
+        "&id="+
+        encodeURIComponent(id);
+
+}
+
+
+/* =========================
+   DATE
+========================= */
+
+function formatDate(value){
+
+    const date =
+        new Date(value);
+
+
+    if(isNaN(date.getTime())){
+
+        return "";
+
+    }
+
+
+    const now =
+        new Date();
+
+
+    if(
+        date.toDateString() ===
+        now.toDateString()
+    ){
+
+        return date.toLocaleTimeString(
+            "en-IN",
+            {
+                hour:"2-digit",
+                minute:"2-digit"
+            }
+        );
+
+    }
+
+
+    const yesterday =
+        new Date();
+
+    yesterday.setDate(
+        yesterday.getDate()-1
+    );
+
+
+    if(
+        date.toDateString() ===
+        yesterday.toDateString()
+    ){
+
+        return "कल";
+
+    }
+
+
+    return date.toLocaleDateString(
+        "en-IN",
+        {
+            day:"2-digit",
+            month:"short"
+        }
+    );
+
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function goHome(){
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+function goFindPeople(){
+
+    window.location.href =
+        "users.html";
+
+}
+
+
+/* IMPORTANT:
+   Friends = matches.html
+*/
+
+function goFriends(){
+
+    window.location.href =
+        "matches.html";
+
+}
+
+
+function goMessages(){
+
+    window.location.href =
+        "messages.html";
+
+}
+
+
+function goAccount(){
+
+    window.location.href =
+        "dashboard.html";
+
+}
+
+
+/* =========================
+   SECURITY
+========================= */
+
+function escapeHtml(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+</script>
+
+</body>
+
+</html>
