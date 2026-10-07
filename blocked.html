@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Blocked Users</title>
+
+    <link rel="stylesheet"
+          href="style.css">
+
+
+    <style>
+
+        body {
+            margin: 0;
+            background: #f5f6ff;
+            font-family: Arial, sans-serif;
+        }
+
+
+        .blocked-page {
+            max-width: 700px;
+            margin: auto;
+            padding: 15px;
+        }
+
+
+        .top-title {
+            background: #4f46e5;
+            color: white;
+            padding: 20px;
+            border-radius: 0 0 25px 25px;
+            text-align: center;
+            font-size: 27px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+
+        .back-btn {
+            width: 100%;
+            border: none;
+            background: #e0e7ff;
+            color: #3730a3;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+
+        .blocked-card {
+            background: white;
+            border-radius: 22px;
+            padding: 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.10);
+        }
+
+
+        .blocked-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0 auto 15px;
+            border: 5px solid #fee2e2;
+        }
+
+
+        .blocked-name {
+            text-align: center;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+
+        .blocked-info {
+            text-align: center;
+            color: #555;
+            font-size: 17px;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+
+        .unblock-btn {
+            width: 100%;
+            border: none;
+            background: #16a34a;
+            color: white;
+            padding: 15px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+
+        .unblock-btn:active {
+            transform: scale(0.98);
+        }
+
+
+        .empty {
+            background: white;
+            border-radius: 22px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #777;
+            font-size: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+
+        .message {
+            text-align: center;
+            font-weight: bold;
+            font-size: 17px;
+            margin: 15px 0;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="blocked-page">
+
+
+    <!-- TITLE -->
+
+    <div class="top-title">
+
+        🚫 Blocked Users
+
+    </div>
+
+
+    <!-- BACK -->
+
+    <button
+        class="back-btn"
+        onclick="location.href='users.html'">
+
+        ← Back to Profiles
+
+    </button>
+
+
+    <!-- MESSAGE -->
+
+    <div
+        id="message"
+        class="message">
+    </div>
+
+
+    <!-- USERS -->
+
+    <div id="blockedUsers">
+
+        <div class="empty">
+
+            🚫 Blocked Users load हो रहे हैं...
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+
+<script>
+
+let currentUser = null;
+
+
+// =====================================
+// START
+// =====================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+
+        // SUPABASE CHECK
+
+        if (
+            typeof supabaseClient ===
+            "undefined"
+        ) {
+
+            document.getElementById(
+                "blockedUsers"
+            ).innerHTML =
+                '<div class="empty">Supabase connection नहीं मिला।</div>';
+
+            return;
+        }
+
+
+        // CURRENT USER
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if (
+            error ||
+            !data.user
+        ) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        // LOAD
+
+        await loadBlockedUsers();
+
+    }
+);
+
+
+// =====================================
+// LOAD BLOCKED USERS
+// =====================================
+
+async function loadBlockedUsers() {
+
+
+    const box =
+        document.getElementById(
+            "blockedUsers"
+        );
+
+
+    box.innerHTML =
+        '<div class="empty">⏳ Loading...</div>';
+
+
+    // GET BLOCKS
+
+    const {
+        data: blocks,
+        error
+    } =
+    await supabaseClient
+        .from("blocks")
+        .select(
+            "id, blocked_user_id, created_at"
+        )
+        .eq(
+            "blocker_id",
+            currentUser.id
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        box.innerHTML =
+            '<div class="empty">❌ Blocked Users load नहीं हुए:<br><br>' +
+            error.message +
+            '</div>';
+
+        return;
+    }
+
+
+    if (
+        !blocks ||
+        blocks.length === 0
+    ) {
+
+        box.innerHTML =
+            '<div class="empty">' +
+            '✅ अभी कोई User Block नहीं है।' +
+            '<br><br>' +
+            'आपने किसी User को Block नहीं किया है।' +
+            '</div>';
+
+        return;
+    }
+
+
+    box.innerHTML =
+        "";
+
+
+    // LOAD EACH PROFILE
+
+    for (
+        const block of blocks
+    ) {
+
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, name, photo_url, age, gender, city, profession"
+            )
+            .eq(
+                "id",
+                block.blocked_user_id
+            )
+            .maybeSingle();
+
+
+        if (
+            profileError
+        ) {
+
+            console.log(
+                "Profile error:",
+                profileError.message
+            );
+
+            continue;
+        }
+
+
+        if (!profile) {
+
+            continue;
+
+        }
+
+
+        // CARD
+
+        const card =
+            document.createElement(
+                "div"
+            );
+
+
+        card.className =
+            "blocked-card";
+
+
+        // PHOTO
+
+        const photo =
+            document.createElement(
+                "img"
+            );
+
+
+        photo.className =
+            "blocked-photo";
+
+
+        photo.src =
+            profile.photo_url ||
+            "https://via.placeholder.com/150?text=User";
+
+
+        photo.onerror =
+            function () {
+
+                this.src =
+                    "https://via.placeholder.com/150?text=User";
+
+            };
+
+
+        card.appendChild(
+            photo
+        );
+
+
+        // NAME
+
+        const name =
+            document.createElement(
+                "div"
+            );
+
+
+        name.className =
+            "blocked-name";
+
+
+        name.textContent =
+            "🚫 " +
+            (
+                profile.name ||
+                "User"
+            );
+
+
+        card.appendChild(
+            name
+        );
+
+
+        // INFO
+
+        const info =
+            document.createElement(
+                "div"
+            );
+
+
+        info.className =
+            "blocked-info";
+
+
+        let text =
+            "";
+
+
+        if (
+            profile.age
+        ) {
+
+            text +=
+                "🎂 " +
+                profile.age +
+                " वर्ष";
+
+        }
+
+
+        if (
+            profile.gender
+        ) {
+
+            if (text) {
+                text += " • ";
+            }
+
+            text +=
+                profile.gender;
+
+        }
+
+
+        if (
+            profile.city
+        ) {
+
+            if (text) {
+                text += "<br>";
+            }
+
+            text +=
+                "📍 " +
+                profile.city;
+
+        }
+
+
+        if (
+            profile.profession
+        ) {
+
+            if (text) {
+                text += "<br>";
+            }
+
+            text +=
+                "💼 " +
+                profile.profession;
+
+        }
+
+
+        info.innerHTML =
+            text ||
+            "कोई जानकारी नहीं";
+
+
+        card.appendChild(
+            info
+        );
+
+
+        // UNBLOCK BUTTON
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.className =
+            "unblock-btn";
+
+
+        button.textContent =
+            "✅ Unblock User";
+
+
+        button.onclick =
+            async function () {
+
+                await unblockUser(
+                    block.id,
+                    profile.name,
+                    button
+                );
+
+            };
+
+
+        card.appendChild(
+            button
+        );
+
+
+        box.appendChild(
+            card
+        );
+
+    }
+
+}
+
+
+// =====================================
+// UNBLOCK USER
+// =====================================
+
+async function unblockUser(
+    blockId,
+    userName,
+    button
+) {
+
+
+    const confirmDelete =
+        confirm(
+            "क्या आप " +
+            (
+                userName ||
+                "इस User"
+            ) +
+            " को Unblock करना चाहते हैं?"
+        );
+
+
+    if (
+        !confirmDelete
+    ) {
+
+        return;
+
+    }
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "⏳ Unblocking...";
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("blocks")
+        .delete()
+        .eq(
+            "id",
+            blockId
+        );
+
+
+    if (error) {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            "✅ Unblock User";
+
+
+        document.getElementById(
+            "message"
+        ).textContent =
+            "❌ Unblock नहीं हुआ: " +
+            error.message;
+
+
+        document.getElementById(
+            "message"
+        ).style.color =
+            "#dc2626";
+
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "message"
+    ).textContent =
+        "✅ " +
+        (
+            userName ||
+            "User"
+        ) +
+        " Unblock हो गया।";
+
+
+    document.getElementById(
+        "message"
+    ).style.color =
+        "#16a34a";
+
+
+    // REFRESH LIST
+
+    await loadBlockedUsers();
+
+}
+
+</script>
+
+
+</body>
+
+</html>
