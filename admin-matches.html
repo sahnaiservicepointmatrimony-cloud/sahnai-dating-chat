@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin - All Matches</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f4ff;
+    color:#222;
+}
+
+.header{
+    background:#e83e9d;
+    color:white;
+    text-align:center;
+    padding:22px 10px;
+    font-size:30px;
+    font-weight:bold;
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:20px;
+}
+
+.back{
+    display:block;
+    background:white;
+    color:#5146d8;
+    text-align:center;
+    padding:20px;
+    border-radius:35px;
+    font-size:22px;
+    font-weight:bold;
+    text-decoration:none;
+    margin-bottom:20px;
+}
+
+.refresh{
+    width:100%;
+    border:0;
+    background:#5043e5;
+    color:white;
+    padding:20px;
+    border-radius:35px;
+    font-size:22px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.status{
+    background:white;
+    padding:18px;
+    border-radius:25px;
+    text-align:center;
+    margin:20px 0;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.count{
+    text-align:center;
+    font-size:26px;
+    margin:20px 0;
+}
+
+.match-card{
+    background:white;
+    border-radius:30px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.match-title{
+    text-align:center;
+    color:#df3c99;
+    font-size:30px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.users{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+}
+
+.user{
+    background:#f8f7ff;
+    border-radius:25px;
+    padding:18px;
+    text-align:center;
+}
+
+.photo{
+    width:140px;
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    border:6px solid #ffd1e9;
+    background:#eee;
+}
+
+.name{
+    font-size:25px;
+    font-weight:bold;
+    margin:12px 0;
+}
+
+.info{
+    color:#666;
+    font-size:17px;
+    line-height:1.7;
+}
+
+.btn{
+    display:block;
+    text-decoration:none;
+    margin-top:12px;
+    padding:14px;
+    border-radius:30px;
+    background:#dfe6ff;
+    color:#3e379a;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.chat{
+    background:#5146e5;
+    color:white;
+}
+
+.delete{
+    width:100%;
+    border:0;
+    background:#dc2626;
+    color:white;
+    cursor:pointer;
+}
+
+.date{
+    text-align:center;
+    margin-top:20px;
+    color:#777;
+    font-size:16px;
+}
+
+.empty{
+    background:white;
+    border-radius:30px;
+    padding:50px 20px;
+    text-align:center;
+}
+
+.empty-icon{
+    font-size:80px;
+}
+
+.empty h2{
+    font-size:32px;
+}
+
+.empty p{
+    color:#777;
+    font-size:20px;
+}
+
+.error{
+    color:#dc2626;
+}
+
+.success{
+    color:#16a34a;
+}
+
+@media(max-width:600px){
+
+    .users{
+        grid-template-columns:1fr;
+    }
+
+    .header{
+        font-size:26px;
+    }
+
+    .container{
+        padding:15px;
+    }
+
+    .photo{
+        width:130px;
+        height:130px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<div class="header">
+    💕 Admin - All Matches
+</div>
+
+
+<div class="container">
+
+
+<a
+href="admin.html"
+class="back">
+
+    ← Admin Panel पर वापस जाएँ
+
+</a>
+
+
+<button
+class="refresh"
+onclick="loadMatches()">
+
+    🔄 Matches Refresh करें
+
+</button>
+
+
+<div
+id="status"
+class="status">
+
+    ⏳ Matches load हो रहे हैं...
+
+</div>
+
+
+<div class="count">
+
+    💕 Total Matches:
+    <span id="matchCount">0</span>
+
+</div>
+
+
+<div id="matches"></div>
+
+
+</div>
+
+
+<script>
+
+
+/* =================================
+   ADMIN CHECK
+================================= */
+
+async function checkAdmin(){
+
+    try{
+
+        const {
+            data:sessionData,
+            error:sessionError
+        } =
+        await supabaseClient.auth.getSession();
+
+
+        if(sessionError){
+
+            throw sessionError;
+
+        }
+
+
+        const session =
+            sessionData.session;
+
+
+        if(!session){
+
+            window.location.href =
+                "login.html";
+
+            return false;
+
+        }
+
+
+        const {
+            data:adminData,
+            error:adminError
+        } =
+        await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq(
+            "user_id",
+            session.user.id
+        )
+        .maybeSingle();
+
+
+        if(adminError){
+
+            throw adminError;
+
+        }
+
+
+        if(!adminData){
+
+            alert(
+                "❌ Admin access नहीं है।"
+            );
+
+            window.location.href =
+                "login.html";
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        document.getElementById(
+            "status"
+        ).innerHTML =
+            "❌ Admin verification failed।";
+
+        return false;
+
+    }
+
+}
+
+
+
+/* =================================
+   LOAD MATCHES
+================================= */
+
+async function loadMatches(){
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+    const container =
+        document.getElementById(
+            "matches"
+        );
+
+    const count =
+        document.getElementById(
+            "matchCount"
+        );
+
+
+    status.innerHTML =
+        "⏳ Matches load हो रहे हैं...";
+
+    status.className =
+        "status";
+
+    container.innerHTML = "";
+
+    count.textContent = "0";
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+        .rpc(
+            "get_admin_matches"
+        );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(!data || data.length === 0){
+
+            status.innerHTML =
+                "ℹ️ अभी कोई Match नहीं है।";
+
+            container.innerHTML = `
+
+                <div class="empty">
+
+                    <div class="empty-icon">
+                        💔
+                    </div>
+
+                    <h2>
+                        अभी कोई Match नहीं है
+                    </h2>
+
+                    <p>
+                        Database में अभी कोई Match उपलब्ध नहीं है।
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        count.textContent =
+            data.length;
+
+
+        let html = "";
+
+
+        data.forEach(
+            match => {
+
+                html += `
+
+                <div class="match-card">
+
+
+                    <div class="match-title">
+
+                        💕 Match
+
+                    </div>
+
+
+                    <div class="users">
+
+
+                        <!-- USER 1 -->
+
+                        <div class="user">
+
+                            <img
+                                src="${safePhoto(match.user1_photo)}"
+                                class="photo"
+                                onerror="this.src='https://via.placeholder.com/300?text=No+Photo'"
+                            >
+
+
+                            <div class="name">
+
+                                ${escapeHtml(
+                                    match.user1_name
+                                )}
+
+                            </div>
+
+
+                            <div class="info">
+
+                                ${
+                                    match.user1_age
+                                    ? `🎂 ${match.user1_age} वर्ष`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user1_gender
+                                    ? `<br>👤 ${escapeHtml(match.user1_gender)}`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user1_city
+                                    ? `<br>📍 ${escapeHtml(match.user1_city)}`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user1_profession
+                                    ? `<br>💼 ${escapeHtml(match.user1_profession)}`
+                                    : ""
+                                }
+
+                            </div>
+
+
+                            <a
+                                class="btn"
+                                href="view-profile.html?id=${match.user1_id}"
+                            >
+
+                                👤 Profile देखें
+
+                            </a>
+
+
+                            <a
+                                class="btn chat"
+                                href="chat.html?id=${match.user1_id}"
+                            >
+
+                                💬 Chat खोलें
+
+                            </a>
+
+
+                        </div>
+
+
+
+                        <!-- USER 2 -->
+
+                        <div class="user">
+
+                            <img
+                                src="${safePhoto(match.user2_photo)}"
+                                class="photo"
+                                onerror="this.src='https://via.placeholder.com/300?text=No+Photo'"
+                            >
+
+
+                            <div class="name">
+
+                                ${escapeHtml(
+                                    match.user2_name
+                                )}
+
+                            </div>
+
+
+                            <div class="info">
+
+                                ${
+                                    match.user2_age
+                                    ? `🎂 ${match.user2_age} वर्ष`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user2_gender
+                                    ? `<br>👤 ${escapeHtml(match.user2_gender)}`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user2_city
+                                    ? `<br>📍 ${escapeHtml(match.user2_city)}`
+                                    : ""
+                                }
+
+                                ${
+                                    match.user2_profession
+                                    ? `<br>💼 ${escapeHtml(match.user2_profession)}`
+                                    : ""
+                                }
+
+                            </div>
+
+
+                            <a
+                                class="btn"
+                                href="view-profile.html?id=${match.user2_id}"
+                            >
+
+                                👤 Profile देखें
+
+                            </a>
+
+
+                            <a
+                                class="btn chat"
+                                href="chat.html?id=${match.user2_id}"
+                            >
+
+                                💬 Chat खोलें
+
+                            </a>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="date">
+
+                        🕐 Match बना:
+
+                        ${
+                            match.created_at
+                            ? new Date(
+                                match.created_at
+                            ).toLocaleString(
+                                "hi-IN"
+                            )
+                            : "Unknown"
+                        }
+
+                    </div>
+
+
+                    <button
+                        class="btn delete"
+                        onclick="deleteMatch('${match.match_id}')"
+                    >
+
+                        🗑️ यह Match Delete करें
+
+                    </button>
+
+
+                </div>
+
+                `;
+
+            }
+        );
+
+
+        container.innerHTML =
+            html;
+
+
+        status.innerHTML =
+            "✅ सभी Matches successfully load हो गए!";
+
+        status.className =
+            "status success";
+
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+
+        status.innerHTML =
+            "❌ Match load करने में समस्या हुई।";
+
+        status.className =
+            "status error";
+
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <h2>
+                    Error
+                </h2>
+
+                <p>
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+
+/* =================================
+   DELETE MATCH
+================================= */
+
+async function deleteMatch(
+    matchId
+){
+
+    const ok =
+        confirm(
+            "क्या आप यह Match Delete करना चाहते हैं?"
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+        .rpc(
+            "delete_admin_match",
+            {
+                p_match_id:matchId
+            }
+        );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(!data){
+
+            alert(
+                "❌ Match नहीं मिला।"
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ Match सफलतापूर्वक Delete हो गया।"
+        );
+
+
+        await loadMatches();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        alert(
+            "❌ Match Delete नहीं हो पाया:\n"
+            + error.message
+        );
+
+    }
+
+}
+
+
+
+/* =================================
+   PHOTO
+================================= */
+
+function safePhoto(photo){
+
+    if(
+        photo &&
+        typeof photo === "string" &&
+        photo.trim()
+    ){
+
+        return photo;
+
+    }
+
+
+    return "https://via.placeholder.com/300?text=No+Photo";
+
+}
+
+
+
+/* =================================
+   ESCAPE HTML
+================================= */
+
+function escapeHtml(value){
+
+    if(
+        value === null ||
+        value === undefined
+    ){
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+
+/* =================================
+   START
+================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        const isAdmin =
+            await checkAdmin();
+
+
+        if(isAdmin){
+
+            await loadMatches();
+
+        }
+
+    }
+);
+
+</script>
+
+
+</body>
+
+</html>
