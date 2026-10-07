@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Shortlist - Sahnai Dating</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#fff5f8;
+    color:#333;
+    padding-bottom:90px;
+}
+
+.header{
+    background:white;
+    padding:15px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:10;
+}
+
+.logo{
+    font-size:24px;
+    font-weight:bold;
+    color:#e91e63;
+}
+
+.header-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.header-btn{
+    border:none;
+    background:#ffe4ef;
+    color:#d62268;
+    padding:10px 14px;
+    border-radius:22px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.container{
+    max-width:850px;
+    margin:auto;
+    padding:25px 15px;
+}
+
+.page-title{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    margin:5px 0 8px;
+}
+
+.page-title span{
+    color:#e91e63;
+}
+
+.subtitle{
+    text-align:center;
+    color:#777;
+    margin-bottom:25px;
+}
+
+.shortlist-list{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+}
+
+.profile-card{
+    background:white;
+    border-radius:22px;
+    overflow:hidden;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.photo-box{
+    width:100%;
+    height:280px;
+    background:#f3f3f3;
+}
+
+.photo-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.no-photo{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:75px;
+    color:#e91e63;
+}
+
+.profile-info{
+    padding:18px;
+}
+
+.profile-name{
+    font-size:25px;
+    font-weight:bold;
+    margin:0 0 8px;
+    color:#222;
+}
+
+.profile-details{
+    font-size:15px;
+    color:#666;
+    line-height:1.7;
+}
+
+.bio{
+    margin-top:12px;
+    padding:12px;
+    background:#fff5f8;
+    border-radius:12px;
+    color:#666;
+    line-height:1.5;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:15px;
+}
+
+.btn{
+    border:none;
+    padding:12px 8px;
+    border-radius:22px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.profile-btn{
+    background:#e91e63;
+    color:white;
+}
+
+.chat-btn{
+    background:#16a34a;
+    color:white;
+}
+
+.remove-btn{
+    background:#fee2e2;
+    color:#dc2626;
+    grid-column:1 / -1;
+}
+
+.empty{
+    background:white;
+    border-radius:25px;
+    padding:45px 20px;
+    text-align:center;
+    box-shadow:0 8px 25px rgba(0,0,0,.07);
+}
+
+.empty-icon{
+    font-size:65px;
+    margin-bottom:15px;
+}
+
+.empty h2{
+    margin:0 0 10px;
+}
+
+.empty p{
+    color:#777;
+    line-height:1.6;
+}
+
+.find-btn{
+    margin-top:15px;
+    border:none;
+    background:#e91e63;
+    color:white;
+    padding:14px 28px;
+    border-radius:28px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.loading{
+    text-align:center;
+    padding:50px 10px;
+    color:#777;
+    font-size:18px;
+}
+
+.bottom-nav{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    height:78px;
+    background:white;
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    box-shadow:0 -3px 15px rgba(0,0,0,.12);
+    z-index:20;
+}
+
+.nav-item{
+    text-align:center;
+    color:#777;
+    font-size:12px;
+    cursor:pointer;
+}
+
+.nav-item.active{
+    color:#e91e63;
+    font-weight:bold;
+}
+
+.nav-icon{
+    display:block;
+    font-size:25px;
+    margin-bottom:3px;
+}
+
+@media(max-width:650px){
+    .shortlist-list{
+        grid-template-columns:1fr;
+    }
+
+    .photo-box{
+        height:300px;
+    }
+}
+
+@media(max-width:420px){
+    .logo{
+        font-size:20px;
+    }
+
+    .header-btn{
+        padding:8px 10px;
+        font-size:12px;
+    }
+
+    .page-title{
+        font-size:27px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        💖 Sahnai Dating
+    </div>
+
+    <div class="header-buttons">
+
+        <button
+            class="header-btn"
+            onclick="location.href='users.html'">
+            🔎 Find
+        </button>
+
+        <button
+            class="header-btn"
+            onclick="location.href='dashboard.html'">
+            👤 Account
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <h1 class="page-title">
+        ❤️ My <span>Shortlist</span>
+    </h1>
+
+    <p class="subtitle">
+        जिन Profiles को आपने पसंद किया है
+    </p>
+
+
+    <div
+        id="shortlistContainer"
+        class="shortlist-list">
+
+        <div class="loading">
+            ⏳ Shortlist लोड हो रही है...
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+    <div
+        class="nav-item"
+        onclick="location.href='index.html'">
+
+        <span class="nav-icon">🏠</span>
+        Home
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        onclick="location.href='users.html'">
+
+        <span class="nav-icon">🔎</span>
+        Find
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        onclick="location.href='matches.html'">
+
+        <span class="nav-icon">❤️</span>
+        Friends
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        onclick="location.href='messages.html'">
+
+        <span class="nav-icon">💬</span>
+        Messages
+
+    </div>
+
+
+    <div
+        class="nav-item"
+        onclick="location.href='dashboard.html'">
+
+        <span class="nav-icon">👤</span>
+        Account
+
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<script>
+
+let currentUser = null;
+
+
+/* =========================
+   LOAD SHORTLIST
+========================= */
+
+async function loadShortlist(){
+
+    const container =
+        document.getElementById("shortlistContainer");
+
+
+    container.innerHTML =
+        '<div class="loading">❤️ Shortlist लोड हो रही है...</div>';
+
+
+    try{
+
+        const {
+            data:{user},
+            error:userError
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if(userError || !user){
+
+            alert("पहले Login करें।");
+
+            window.location.href="login.html";
+
+            return;
+        }
+
+
+        currentUser=user;
+
+
+        /* =========================
+           GET SHORTLIST
+        ========================= */
+
+        const {
+            data:shortlist,
+            error:shortlistError
+        } =
+        await supabaseClient
+            .from("shortlists")
+            .select("id, profile_id, created_at")
+            .eq("user_id",user.id)
+            .order("created_at",{ascending:false});
+
+
+        if(shortlistError){
+
+            container.innerHTML=
+                '<div class="empty">'+
+                '<div class="empty-icon">⚠️</div>'+
+                '<h2>Shortlist Load नहीं हुई</h2>'+
+                '<p>'+
+                shortlistError.message+
+                '</p>'+
+                '</div>';
+
+            return;
+        }
+
+
+        /* =========================
+           EMPTY
+        ========================= */
+
+        if(!shortlist || shortlist.length===0){
+
+            container.innerHTML=`
+
+                <div class="empty"
+                     style="grid-column:1/-1;">
+
+                    <div class="empty-icon">
+                        💗
+                    </div>
+
+                    <h2>
+                        अभी कोई Shortlist Profile नहीं है
+                    </h2>
+
+                    <p>
+                        Find People में जाकर
+                        ❤️ Shortlist करें और
+                        Profiles यहाँ दिखाई देंगी।
+                    </p>
+
+                    <button
+                        class="find-btn"
+                        onclick="location.href='users.html'">
+
+                        🔎 Profiles देखें
+
+                    </button>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        /* =========================
+           PROFILE IDs
+        ========================= */
+
+        const profileIds =
+            shortlist.map(
+                item => item.profile_id
+            );
+
+
+        /* =========================
+           LOAD PROFILES
+        ========================= */
+
+        const {
+            data:profiles,
+            error:profileError
+        } =
+        await supabaseClient
+            .from("profiles")
+            .select(`
+                id,
+                name,
+                photo_url,
+                age,
+                gender,
+                city,
+                profession,
+                bio
+            `)
+            .in("id",profileIds);
+
+
+        if(profileError){
+
+            container.innerHTML=
+                '<div class="empty">'+
+                '<div class="empty-icon">⚠️</div>'+
+                '<h2>Profiles Load नहीं हुईं</h2>'+
+                '<p>'+
+                profileError.message+
+                '</p>'+
+                '</div>';
+
+            return;
+        }
+
+
+        container.innerHTML="";
+
+
+        /* =========================
+           CREATE CARDS
+        ========================= */
+
+        shortlist.forEach(item=>{
+
+            const person =
+                profiles.find(
+                    profile =>
+                    profile.id===item.profile_id
+                );
+
+
+            if(!person)return;
+
+
+            const name =
+                person.name || "User";
+
+
+            const firstLetter =
+                name.charAt(0).toUpperCase();
+
+
+            const card =
+                document.createElement("div");
+
+
+            card.className="profile-card";
+
+
+            card.innerHTML=`
+
+                <div class="photo-box">
+
+                    ${
+                        person.photo_url
+
+                        ?
+
+                        `<img
+                            src="${person.photo_url}"
+                            alt="${escapeHtml(name)}"
+                            onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+
+                         <div
+                            class="no-photo"
+                            style="display:none;">
+                            ${escapeHtml(firstLetter)}
+                         </div>`
+
+                        :
+
+                        `<div class="no-photo">
+                            ${escapeHtml(firstLetter)}
+                         </div>`
+                    }
+
+                </div>
+
+
+                <div class="profile-info">
+
+                    <h2 class="profile-name">
+                        ${escapeHtml(name)}
+                    </h2>
+
+
+                    <div class="profile-details">
+
+                        ${
+                            person.age
+                            ? "🎂 "+escapeHtml(person.age)+" वर्ष"
+                            : ""
+                        }
+
+                        ${
+                            person.gender
+                            ? " • ⚥ "+escapeHtml(person.gender)
+                            : ""
+                        }
+
+                        ${
+                            person.city
+                            ? "<br>📍 "+escapeHtml(person.city)
+                            : ""
+                        }
+
+                        ${
+                            person.profession
+                            ? "<br>💼 "+escapeHtml(person.profession)
+                            : ""
+                        }
+
+                    </div>
+
+
+                    ${
+                        person.bio
+                        ?
+                        `<div class="bio">
+                            📝 ${escapeHtml(person.bio)}
+                         </div>`
+                        :
+                        ""
+                    }
+
+
+                    <div class="buttons">
+
+                        <button
+                            class="btn profile-btn">
+
+                            👤 Profile
+
+                        </button>
+
+
+                        <button
+                            class="btn chat-btn">
+
+                            💬 Chat
+
+                        </button>
+
+
+                        <button
+                            class="btn remove-btn">
+
+                            ❤️ Remove from Shortlist
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            /* PROFILE */
+
+            card
+                .querySelector(".profile-btn")
+                .onclick=function(){
+
+                    location.href=
+                        "view-profile.html?id="+
+                        encodeURIComponent(person.id);
+
+                };
+
+
+            /* CHAT */
+
+            card
+                .querySelector(".chat-btn")
+                .onclick=function(){
+
+                    location.href=
+                        "chat.html?id="+
+                        encodeURIComponent(person.id)+
+                        "&user="+
+                        encodeURIComponent(name);
+
+                };
+
+
+            /* REMOVE */
+
+            card
+                .querySelector(".remove-btn")
+                .onclick=async function(){
+
+                    const confirmRemove =
+                        confirm(
+                            "क्या आप इस Profile को Shortlist से हटाना चाहते हैं?"
+                        );
+
+
+                    if(!confirmRemove)return;
+
+
+                    this.disabled=true;
+
+
+                    const {
+                        error
+                    } =
+                    await supabaseClient
+                        .from("shortlists")
+                        .delete()
+                        .eq("id",item.id);
+
+
+                    if(error){
+
+                        alert(
+                            "Remove नहीं हुआ: "+
+                            error.message
+                        );
+
+                        this.disabled=false;
+
+                        return;
+                    }
+
+
+                    alert(
+                        "❤️ Profile Shortlist से हटा दी गई।"
+                    );
+
+
+                    loadShortlist();
+
+                };
+
+
+            container.appendChild(card);
+
+        });
+
+
+    }catch(error){
+
+        console.log(error);
+
+        container.innerHTML=
+            '<div class="empty">'+
+            '<div class="empty-icon">⚠️</div>'+
+            '<h2>कुछ समस्या हुई</h2>'+
+            '<p>कृपया फिर से कोशिश करें।</p>'+
+            '</div>';
+
+    }
+
+}
+
+
+/* =========================
+   HTML SAFE TEXT
+========================= */
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadShortlist
+);
+
+</script>
+
+</body>
+</html>
