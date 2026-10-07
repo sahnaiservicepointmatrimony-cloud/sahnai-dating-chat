@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>My Account - Connect</title>
+<title>My Account - Sahnai Dating</title>
 
 <style>
 
@@ -21,22 +21,16 @@ body{
     padding-bottom:82px;
 }
 
-/* =========================
-   HEADER
-========================= */
+/* HEADER */
 
 .header{
     height:70px;
     background:white;
-
     display:flex;
     align-items:center;
     justify-content:space-between;
-
     padding:0 15px;
-
     box-shadow:0 3px 15px rgba(0,0,0,.08);
-
     position:sticky;
     top:0;
     z-index:100;
@@ -73,9 +67,7 @@ body{
     color:#e91e63;
 }
 
-/* =========================
-   MAIN
-========================= */
+/* MAIN */
 
 .container{
     width:100%;
@@ -84,9 +76,7 @@ body{
     padding:24px 16px 30px;
 }
 
-/* =========================
-   TITLE
-========================= */
+/* TITLE */
 
 .page-title{
     text-align:center;
@@ -108,9 +98,7 @@ body{
     font-size:14px;
 }
 
-/* =========================
-   ACCOUNT CARD
-========================= */
+/* ACCOUNT CARD */
 
 .account-card{
     background:white;
@@ -127,9 +115,7 @@ body{
     margin-bottom:18px;
 }
 
-/* =========================
-   MY PROFILE
-========================= */
+/* MY PROFILE */
 
 .my-profile{
     display:flex;
@@ -165,9 +151,7 @@ body{
     line-height:1.7;
 }
 
-/* =========================
-   PROFILE BUTTONS
-========================= */
+/* PROFILE BUTTONS */
 
 .profile-buttons{
     display:grid;
@@ -197,9 +181,7 @@ body{
     color:#e91e63;
 }
 
-/* =========================
-   FRIENDS
-========================= */
+/* FRIENDS */
 
 .friends-card{
     background:white;
@@ -242,9 +224,7 @@ body{
     cursor:pointer;
 }
 
-/* =========================
-   FRIEND CARD
-========================= */
+/* FRIEND CARD */
 
 .friend-card{
     display:flex;
@@ -295,9 +275,7 @@ body{
     cursor:pointer;
 }
 
-/* =========================
-   EMPTY
-========================= */
+/* EMPTY */
 
 .empty-box{
     background:#fff8fa;
@@ -323,9 +301,7 @@ body{
     line-height:1.6;
 }
 
-/* =========================
-   LOADING
-========================= */
+/* LOADING */
 
 .loading{
     text-align:center;
@@ -333,28 +309,20 @@ body{
     color:#777;
 }
 
-/* =========================
-   BOTTOM NAV
-========================= */
+/* BOTTOM NAV */
 
 .bottom-nav{
     position:fixed;
     left:0;
     right:0;
     bottom:0;
-
     height:76px;
-
     background:white;
-
     border-top:1px solid #eee;
-
     box-shadow:0 -4px 18px rgba(0,0,0,.08);
-
     display:flex;
     justify-content:space-around;
     align-items:center;
-
     z-index:999;
 }
 
@@ -380,9 +348,7 @@ body{
     font-weight:bold;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* MOBILE */
 
 @media(max-width:450px){
 
@@ -422,18 +388,12 @@ body{
 </style>
 </head>
 
-
 <body>
-
-
-<!-- =========================
-     HEADER
-========================= -->
 
 <header class="header">
 
     <div class="logo">
-        💖 Connect
+        💖 Sahnai Dating
     </div>
 
     <div class="header-buttons">
@@ -459,12 +419,7 @@ body{
 </header>
 
 
-<!-- =========================
-     MAIN
-========================= -->
-
 <main class="container">
-
 
     <div class="page-title">
 
@@ -473,15 +428,11 @@ body{
         </h1>
 
         <p>
-            आपका Connect Account
+            आपका Sahnai Dating Account
         </p>
 
     </div>
 
-
-    <!-- =========================
-         MY PROFILE
-    ========================= -->
 
     <section class="account-card">
 
@@ -499,10 +450,6 @@ body{
 
     </section>
 
-
-    <!-- =========================
-         FRIENDS PREVIEW
-    ========================= -->
 
     <section class="friends-card">
 
@@ -545,12 +492,7 @@ body{
 </main>
 
 
-<!-- =========================
-     BOTTOM NAV
-========================= -->
-
 <nav class="bottom-nav">
-
 
     <button
         class="nav-item"
@@ -618,10 +560,6 @@ body{
 
 </nav>
 
-
-<!-- =========================
-     SUPABASE
-========================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -751,10 +689,6 @@ async function loadMyProfile(){
 
         `;
 
-        console.log(
-            error.message
-        );
-
         return;
 
     }
@@ -776,7 +710,7 @@ async function loadMyProfile(){
 
                 <p>
                     अपनी Profile बनाकर
-                    Connect पर लोगों से मिलना शुरू करें।
+                    Sahnai Dating पर लोगों से मिलना शुरू करें।
                 </p>
 
             </div>
@@ -806,11 +740,9 @@ async function loadMyProfile(){
             <div class="my-info">
 
                 <div class="my-name">
-
                     ${escapeHtml(
                         data.name || "User"
                     )}
-
                 </div>
 
                 <div class="my-details">
@@ -943,10 +875,6 @@ async function loadMyFriends(){
 
         `;
 
-        console.log(
-            error.message
-        );
-
         return;
 
     }
@@ -1001,11 +929,6 @@ async function loadMyFriends(){
 
     list.innerHTML = "";
 
-
-    /*
-       Account page पर
-       अधिकतम 3 Friends दिखेंगे।
-    */
 
     const previewMatches =
         matches.slice(0,3);
@@ -1074,12 +997,9 @@ async function loadMyFriends(){
             <div class="friend-info">
 
                 <div class="friend-name">
-
                     ${escapeHtml(
-                        friend.name ||
-                        "User"
+                        friend.name || "User"
                     )}
-
                 </div>
 
 
@@ -1122,8 +1042,7 @@ async function loadMyFriends(){
                 class="friend-chat"
                 onclick="openChat(
                     '${escapeJs(
-                        friend.name ||
-                        "User"
+                        friend.name || "User"
                     )}',
                     '${friend.id}'
                 )">
@@ -1163,7 +1082,7 @@ function openChat(
 
 
 /* =========================
-   EDIT PROFILE
+   PROFILE
 ========================= */
 
 function editProfile(){
@@ -1173,10 +1092,6 @@ function editProfile(){
 
 }
 
-
-/* =========================
-   VIEW MY PROFILE
-========================= */
 
 function viewMyProfile(){
 
@@ -1206,15 +1121,14 @@ function goFindPeople(){
 }
 
 
-/*
-   IMPORTANT:
-   My Friends अब friends.html
+/* IMPORTANT:
+   Friends हमेशा matches.html
 */
 
 function goFriends(){
 
     window.location.href =
-        "friends.html";
+        "matches.html";
 
 }
 
@@ -1281,64 +1195,29 @@ document
    SECURITY
 ========================= */
 
-function escapeHtml(
-    value
-){
+function escapeHtml(value){
 
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
 
 }
 
 
-function escapeJs(
-    value
-){
+function escapeJs(value){
 
-    return String(value)
-
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-
-        .replace(
-            /'/g,
-            "\\'"
-        )
-
-        .replace(
-            /"/g,
-            '\\"'
-        );
+    return String(value || "")
+        .replace(/\\/g,"\\\\")
+        .replace(/'/g,"\\'")
+        .replace(/"/g,'\\"');
 
 }
 
 </script>
 
 </body>
+
 </html>
