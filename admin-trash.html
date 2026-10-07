@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin Trash - Dating App</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6ff;
+    color:#222;
+}
+
+.topbar{
+    background:#991b1b;
+    color:white;
+    padding:22px 15px;
+    text-align:center;
+    font-size:27px;
+    font-weight:bold;
+}
+
+.container{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    padding:18px 14px 50px;
+}
+
+.back-btn,
+.refresh-btn{
+    display:block;
+    width:100%;
+    padding:18px;
+    margin:15px 0;
+    border:none;
+    border-radius:35px;
+    font-size:19px;
+    font-weight:bold;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.back-btn{
+    background:white;
+    color:#4f46e5;
+}
+
+.refresh-btn{
+    background:#4f46e5;
+    color:white;
+}
+
+.status{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    margin:18px 0;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.success{
+    color:#16a34a;
+}
+
+.error{
+    color:#dc2626;
+}
+
+.info{
+    color:#555;
+}
+
+.total{
+    text-align:center;
+    font-size:29px;
+    margin:22px 0;
+}
+
+.card{
+    background:white;
+    border-radius:28px;
+    padding:24px 18px;
+    margin:20px 0;
+    text-align:center;
+    box-shadow:0 5px 22px rgba(0,0,0,.10);
+}
+
+.photo{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    object-fit:cover;
+    border:7px solid #f9a8d4;
+    margin:auto;
+    display:block;
+}
+
+.no-photo{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    font-size:65px;
+}
+
+.name{
+    font-size:30px;
+    font-weight:bold;
+    margin:18px 0 12px;
+}
+
+.admin-badge{
+    display:inline-block;
+    background:#ede9fe;
+    color:#6d28d9;
+    padding:9px 18px;
+    border-radius:25px;
+    font-weight:bold;
+    margin-bottom:12px;
+}
+
+.details{
+    font-size:19px;
+    line-height:1.8;
+    color:#666;
+}
+
+.trash-badge{
+    display:inline-block;
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:11px 22px;
+    border-radius:30px;
+    margin:15px 0 5px;
+    font-size:17px;
+    font-weight:bold;
+}
+
+.profile-btn,
+.restore-btn{
+    display:block;
+    width:100%;
+    padding:17px;
+    border:none;
+    border-radius:35px;
+    margin-top:15px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-btn{
+    background:#e0e7ff;
+    color:#3730a3;
+}
+
+.restore-btn{
+    background:#16a34a;
+    color:white;
+}
+
+.empty{
+    background:white;
+    border-radius:28px;
+    padding:60px 20px;
+    text-align:center;
+    margin-top:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.empty-icon{
+    font-size:80px;
+}
+
+.empty-title{
+    font-size:30px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.empty-text{
+    font-size:19px;
+    color:#777;
+    line-height:1.6;
+}
+
+.warning{
+    background:#fff7ed;
+    color:#c2410c;
+    padding:16px;
+    border-radius:18px;
+    margin-top:20px;
+    text-align:center;
+    font-size:15px;
+    line-height:1.5;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="topbar">
+
+🗑️ Admin - User Trash
+
+</div>
+
+
+<div class="container">
+
+
+<a
+href="admin.html"
+class="back-btn">
+
+← Admin Panel पर वापस जाएँ
+
+</a>
+
+
+<button
+class="refresh-btn"
+onclick="loadTrash()">
+
+🔄 Trash Refresh करें
+
+</button>
+
+
+<div
+id="status"
+class="status info">
+
+⏳ Trash load हो रहा है...
+
+</div>
+
+
+<div class="total">
+
+🗑️ Total Trash Users:
+<span id="total">0</span>
+
+</div>
+
+
+<div id="trashList"></div>
+
+
+<div class="warning">
+
+⚠️ Trash में User को रखने का मतलब
+Permanent Delete करना नहीं है।
+<br>
+अभी केवल Restore सुविधा उपलब्ध है।
+
+</div>
+
+
+</div>
+
+
+<script>
+
+let adminUserId = null;
+
+
+/* =====================================
+   START
+===================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    checkAdmin
+);
+
+
+/* =====================================
+   ADMIN CHECK
+===================================== */
+
+async function checkAdmin(){
+
+    try{
+
+        if(
+            typeof supabaseClient ===
+            "undefined"
+        ){
+
+            showStatus(
+                "❌ Supabase connection नहीं मिला।",
+                "error"
+            );
+
+            return;
+        }
+
+
+        const {
+            data:sessionData,
+            error:sessionError
+        } =
+        await supabaseClient
+        .auth
+        .getSession();
+
+
+        if(sessionError){
+
+            throw sessionError;
+
+        }
+
+
+        const session =
+            sessionData.session;
+
+
+        if(!session){
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        adminUserId =
+            session.user.id;
+
+
+        const {
+            data:adminData,
+            error:adminError
+        } =
+        await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq(
+            "user_id",
+            adminUserId
+        )
+        .maybeSingle();
+
+
+        if(adminError){
+
+            console.error(
+                adminError
+            );
+
+            showStatus(
+                "❌ Admin verification में समस्या हुई।",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if(!adminData){
+
+            alert(
+                "❌ आपको Admin Panel की अनुमति नहीं है।"
+            );
+
+
+            await supabaseClient
+            .auth
+            .signOut();
+
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        await loadTrash();
+
+    }
+
+    catch(error){
+
+        console.error(
+            error
+        );
+
+        showStatus(
+            "❌ Admin verification failed।",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   LOAD TRASH
+===================================== */
+
+async function loadTrash(){
+
+    showStatus(
+        "⏳ Trash users load हो रहे हैं...",
+        "info"
+    );
+
+
+    const {
+        data:trashData,
+        error:trashError
+    } =
+    await supabaseClient
+    .from("trash_users")
+    .select(
+        "id,user_id"
+    )
+    .order(
+        "id",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(trashError){
+
+        console.error(
+            "Trash Error:",
+            trashError
+        );
+
+
+        showStatus(
+            "❌ Trash load करने में समस्या हुई: "+
+            trashError.message,
+            "error"
+        );
+
+
+        return;
+
+    }
+
+
+    const list =
+        document.getElementById(
+            "trashList"
+        );
+
+
+    list.innerHTML = "";
+
+
+    const trashUsers =
+        trashData || [];
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        trashUsers.length;
+
+
+    if(
+        trashUsers.length === 0
+    ){
+
+        showStatus(
+            "ℹ️ Trash अभी खाली है।",
+            "info"
+        );
+
+
+        list.innerHTML = `
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                🗑️
+            </div>
+
+            <div class="empty-title">
+                Trash खाली है
+            </div>
+
+            <div class="empty-text">
+                अभी कोई User Trash में नहीं है।
+            </div>
+
+        </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    showStatus(
+        "✅ Trash Users successfully load हो गए।",
+        "success"
+    );
+
+
+    for(
+        const trashUser of trashUsers
+    ){
+
+        await createTrashCard(
+            trashUser,
+            list
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   CREATE TRASH CARD
+===================================== */
+
+async function createTrashCard(
+    trashUser,
+    list
+){
+
+    const {
+        data:profile,
+        error
+    } =
+    await supabaseClient
+    .from("profiles")
+    .select(
+        "id,name,photo_url,age,gender,city,profession,bio"
+    )
+    .eq(
+        "id",
+        trashUser.user_id
+    )
+    .maybeSingle();
+
+
+    if(error){
+
+        console.error(
+            "Profile Error:",
+            error
+        );
+
+
+        const errorCard =
+            document.createElement(
+                "div"
+            );
+
+
+        errorCard.className =
+            "card";
+
+
+        errorCard.innerHTML = `
+
+            <div class="name">
+                ⚠️ Profile Load Error
+            </div>
+
+            <div class="details">
+
+                User ID:<br>
+
+                ${escapeHtml(
+                    trashUser.user_id
+                )}
+
+            </div>
+
+        `;
+
+
+        list.appendChild(
+            errorCard
+        );
+
+
+        return;
+
+    }
+
+
+    /*
+       Profile नहीं मिली तो भी
+       Trash record दिखाएँ
+    */
+
+    if(!profile){
+
+        const missingCard =
+            document.createElement(
+                "div"
+            );
+
+
+        missingCard.className =
+            "card";
+
+
+        missingCard.innerHTML = `
+
+            <div class="name">
+                ⚠️ User Profile नहीं मिली
+            </div>
+
+            <div class="trash-badge">
+                🗑️ Trash Record मौजूद है
+            </div>
+
+            <div class="details">
+
+                User ID:<br>
+
+                ${escapeHtml(
+                    trashUser.user_id
+                )}
+
+            </div>
+
+            <button
+                class="restore-btn"
+                onclick="removeFromTrash(
+                    '${escapeHtml(
+                        trashUser.user_id
+                    )}'
+                )">
+
+                ↩️ Trash से वापस लाएँ
+
+            </button>
+
+        `;
+
+
+        list.appendChild(
+            missingCard
+        );
+
+
+        return;
+
+    }
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "card";
+
+
+    let photoHTML;
+
+
+    if(
+        profile.photo_url &&
+        profile.photo_url.trim() !== ""
+    ){
+
+        photoHTML = `
+
+        <img
+            class="photo"
+            src="${escapeHtml(
+                profile.photo_url
+            )}"
+            alt="Profile Photo"
+            onerror="
+              this.style.display='none';
+              this.nextElementSibling.style.display='flex';
+            "
+        >
+
+        <div
+            class="no-photo"
+            style="display:none;">
+
+            👤
+
+        </div>
+
+        `;
+
+    }
+
+    else{
+
+        photoHTML = `
+
+        <div class="no-photo">
+
+            👤
+
+        </div>
+
+        `;
+
+    }
+
+
+    const isAdmin =
+        profile.id ===
+        adminUserId;
+
+
+    card.innerHTML = `
+
+        ${photoHTML}
+
+
+        <div class="name">
+
+            ${escapeHtml(
+                profile.name ||
+                "Unknown User"
+            )}
+
+        </div>
+
+
+        ${
+            isAdmin
+
+            ?
+
+            `
+            <div class="admin-badge">
+
+                🔐 Admin + User
+
+            </div>
+            `
+
+            :
+
+            ""
+
+        }
+
+
+        <div class="trash-badge">
+
+            🗑️ Trash User
+
+        </div>
+
+
+        <div class="details">
+
+            ${
+                profile.age
+                ?
+
+                "🎂 " +
+                escapeHtml(
+                    String(profile.age)
+                ) +
+                " वर्ष<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                profile.gender
+                ?
+
+                "👤 " +
+                escapeHtml(
+                    profile.gender
+                ) +
+                "<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                profile.city
+                ?
+
+                "📍 " +
+                escapeHtml(
+                    profile.city
+                ) +
+                "<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                profile.profession
+                ?
+
+                "💼 " +
+                escapeHtml(
+                    profile.profession
+                )
+
+                :
+
+                ""
+            }
+
+        </div>
+
+
+        <button
+            class="profile-btn"
+            onclick="viewProfile(
+                '${profile.id}'
+            )">
+
+            👤 Profile देखें
+
+        </button>
+
+
+        <button
+            class="restore-btn"
+            onclick="removeFromTrash(
+                '${profile.id}'
+            )">
+
+            ↩️ Trash से वापस लाएँ
+
+        </button>
+
+    `;
+
+
+    list.appendChild(
+        card
+    );
+
+}
+
+
+/* =====================================
+   VIEW PROFILE
+===================================== */
+
+function viewProfile(
+    id
+){
+
+    window.location.href =
+        "view-profile.html?id=" +
+        encodeURIComponent(
+            id
+        );
+
+}
+
+
+/* =====================================
+   RESTORE
+===================================== */
+
+async function removeFromTrash(
+    userId
+){
+
+    /*
+       Admin account को restore करने
+       की जरूरत नहीं है।
+    */
+
+    if(
+        userId === adminUserId
+    ){
+
+        alert(
+            "ℹ️ यह Admin + User account है।"
+        );
+
+        return;
+
+    }
+
+
+    const ok =
+        confirm(
+            "क्या आप इस User को Trash से वापस लाना चाहते हैं?\n\nUser Permanent Delete नहीं होगा।"
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("trash_users")
+    .delete()
+    .eq(
+        "user_id",
+        userId
+    );
+
+
+    if(error){
+
+        console.error(
+            error
+        );
+
+
+        alert(
+            "❌ User को Trash से वापस नहीं लाया जा सका:\n"+
+            error.message
+        );
+
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ User Trash से वापस आ गया।"
+    );
+
+
+    await loadTrash();
+
+}
+
+
+/* =====================================
+   STATUS
+===================================== */
+
+function showStatus(
+    message,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "status"
+        );
+
+
+    box.className =
+        "status " +
+        type;
+
+
+    box.textContent =
+        message;
+
+}
+
+
+/* =====================================
+   SAFE HTML
+===================================== */
+
+function escapeHtml(
+    value
+){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>
