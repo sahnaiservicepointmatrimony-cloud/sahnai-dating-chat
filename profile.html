@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>My Profile - Connect</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#fff5f8;
+    color:#222;
+    padding-bottom:85px;
+}
+
+
+/* HEADER */
+
+.header{
+    height:68px;
+    background:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 16px;
+
+    position:sticky;
+    top:0;
+    z-index:20;
+
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+}
+
+.logo{
+    color:#e91e63;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.back-btn{
+    border:none;
+    background:#ffe3ed;
+    color:#e91e63;
+
+    padding:9px 16px;
+    border-radius:22px;
+
+    font-size:14px;
+    font-weight:bold;
+}
+
+
+/* MAIN */
+
+.container{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    padding:22px 15px 35px;
+}
+
+
+/* TITLE */
+
+.page-title{
+    text-align:center;
+    margin-bottom:18px;
+}
+
+.page-title h1{
+    margin:0;
+    font-size:29px;
+}
+
+.page-title h1 span{
+    color:#e91e63;
+}
+
+.page-title p{
+    margin:7px 0 0;
+    color:#777;
+}
+
+
+/* CARD */
+
+.profile-card{
+    background:white;
+    border-radius:28px;
+    padding:24px 18px 28px;
+
+    box-shadow:
+        0 8px 30px rgba(233,30,99,.12);
+}
+
+
+/* PHOTO */
+
+.photo-area{
+    text-align:center;
+}
+
+.avatar{
+    width:170px;
+    height:170px;
+
+    margin:0 auto 14px;
+
+    border-radius:50%;
+
+    overflow:hidden;
+
+    background:#ffe4ed;
+
+    border:6px solid #ffe0eb;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:65px;
+
+    box-shadow:
+        0 7px 22px rgba(233,30,99,.18);
+}
+
+.avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.photo-btn{
+    display:inline-block;
+
+    background:#e91e63;
+    color:white;
+
+    padding:11px 20px;
+
+    border-radius:24px;
+
+    font-size:14px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.photo-hint{
+    color:#999;
+    font-size:12px;
+    margin:8px 0 18px;
+}
+
+
+/* PROFILE TITLE */
+
+.profile-title{
+    text-align:center;
+    font-size:25px;
+    color:#e91e63;
+    margin:5px 0 22px;
+}
+
+
+/* FORM */
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+
+    margin-bottom:7px;
+
+    font-size:14px;
+    font-weight:bold;
+
+    color:#444;
+}
+
+.form-control{
+    width:100%;
+
+    height:52px;
+
+    border:1.5px solid #ddd;
+
+    border-radius:15px;
+
+    background:#fafafa;
+
+    padding:0 15px;
+
+    font-size:16px;
+
+    outline:none;
+}
+
+.form-control:focus{
+    border-color:#e91e63;
+
+    background:white;
+
+    box-shadow:
+        0 0 0 3px rgba(233,30,99,.08);
+}
+
+textarea.form-control{
+    height:125px;
+    padding:14px 15px;
+    resize:vertical;
+    line-height:1.5;
+}
+
+
+/* SAVE */
+
+.save-btn{
+    width:100%;
+
+    height:54px;
+
+    margin-top:7px;
+
+    border:none;
+
+    border-radius:28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e91e63,
+            #ff4f81
+        );
+
+    color:white;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 7px 20px rgba(233,30,99,.22);
+}
+
+
+/* STATUS */
+
+.status-message{
+    text-align:center;
+
+    min-height:22px;
+
+    margin-top:15px;
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    line-height:1.5;
+}
+
+.photo-message{
+    text-align:center;
+
+    min-height:20px;
+
+    margin:7px 0 10px;
+
+    color:#16a34a;
+
+    font-size:13px;
+
+    font-weight:bold;
+}
+
+
+/* BOTTOM NAV */
+
+.bottom-nav{
+    position:fixed;
+
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:72px;
+
+    background:white;
+
+    border-top:1px solid #eee;
+
+    box-shadow:
+        0 -4px 18px rgba(0,0,0,.08);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-around;
+
+    z-index:100;
+}
+
+.nav-item{
+    flex:1;
+
+    max-width:130px;
+
+    border:none;
+
+    background:transparent;
+
+    color:#777;
+
+    text-align:center;
+
+    text-decoration:none;
+
+    font-size:10px;
+
+    padding:6px 2px;
+}
+
+.nav-icon{
+    display:block;
+    font-size:21px;
+    margin-bottom:3px;
+}
+
+.nav-item.active{
+    color:#e91e63;
+    font-weight:bold;
+}
+
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    .header{
+        padding:0 12px;
+    }
+
+    .logo{
+        font-size:20px;
+    }
+
+    .back-btn{
+        padding:8px 12px;
+        font-size:12px;
+    }
+
+    .container{
+        padding:18px 12px 30px;
+    }
+
+    .profile-card{
+        padding:22px 14px 25px;
+        border-radius:24px;
+    }
+
+    .avatar{
+        width:155px;
+        height:155px;
+    }
+
+    .profile-title{
+        font-size:23px;
+    }
+
+    .bottom-nav{
+        height:70px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+    <div class="logo">
+        💖 Connect
+    </div>
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ← Back
+
+    </button>
+
+</header>
+
+
+
+<main class="container">
+
+
+    <div class="page-title">
+
+        <h1>
+            👤 My <span>Profile</span>
+        </h1>
+
+        <p>
+            अपनी Profile की जानकारी अपडेट करें
+        </p>
+
+    </div>
+
+
+
+    <section class="profile-card">
+
+
+        <!-- PHOTO -->
+
+        <div class="photo-area">
+
+            <div
+                id="profileAvatar"
+                class="avatar">
+
+                👤
+
+            </div>
+
+
+            <label
+                for="photoInput"
+                class="photo-btn">
+
+                📷 फोटो बदलें
+
+            </label>
+
+
+            <input
+                type="file"
+                id="photoInput"
+                accept="image/*"
+                style="display:none;"
+            >
+
+
+            <div
+                id="photoMessage"
+                class="photo-message">
+
+            </div>
+
+
+            <div class="photo-hint">
+                JPG / PNG • अधिकतम 5 MB
+            </div>
+
+        </div>
+
+
+
+        <!-- TITLE -->
+
+        <h2
+            id="profileTitle"
+            class="profile-title">
+
+            My Profile
+
+        </h2>
+
+
+
+        <!-- FORM -->
+
+        <form id="profileForm">
+
+
+            <div class="form-group">
+
+                <label>
+                    👤 पूरा नाम
+                </label>
+
+                <input
+                    type="text"
+                    id="profileName"
+                    class="form-control"
+                    placeholder="अपना पूरा नाम लिखें"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    🎂 उम्र
+                </label>
+
+                <input
+                    type="number"
+                    id="profileAge"
+                    class="form-control"
+                    placeholder="अपनी उम्र लिखें"
+                    min="18"
+                    max="100"
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    ⚥ Gender
+                </label>
+
+                <select
+                    id="profileGender"
+                    class="form-control">
+
+                    <option value="">
+                        Gender चुनें
+                    </option>
+
+                    <option value="Male">
+                        Male
+                    </option>
+
+                    <option value="Female">
+                        Female
+                    </option>
+
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    📍 शहर
+                </label>
+
+                <input
+                    type="text"
+                    id="profileCity"
+                    class="form-control"
+                    placeholder="अपना शहर लिखें"
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    💼 Profession / काम
+                </label>
+
+                <input
+                    type="text"
+                    id="profileProfession"
+                    class="form-control"
+                    placeholder="आप क्या काम करते हैं?"
+                >
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label>
+                    📝 अपने बारे में
+                </label>
+
+                <textarea
+                    id="profileBio"
+                    class="form-control"
+                    placeholder="अपने बारे में थोड़ा लिखें..."
+                ></textarea>
+
+            </div>
+
+
+
+            <button
+                type="submit"
+                class="save-btn">
+
+                💾 Save Profile
+
+            </button>
+
+
+        </form>
+
+
+        <div
+            id="profileMessage"
+            class="status-message">
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<!-- BOTTOM NAV -->
+
+<nav class="bottom-nav">
+
+
+    <a
+        href="index.html"
+        class="nav-item">
+
+        <span class="nav-icon">
+            🏠
+        </span>
+
+        Home
+
+    </a>
+
+
+    <a
+        href="users.html"
+        class="nav-item">
+
+        <span class="nav-icon">
+            🔎
+        </span>
+
+        Find People
+
+    </a>
+
+
+    <a
+        href="matches.html"
+        class="nav-item">
+
+        <span class="nav-icon">
+            ❤️
+        </span>
+
+        Friends
+
+    </a>
+
+
+    <a
+        href="messages.html"
+        class="nav-item">
+
+        <span class="nav-icon">
+            💬
+        </span>
+
+        Messages
+
+    </a>
+
+
+    <a
+        href="profile.html"
+        class="nav-item active">
+
+        <span class="nav-icon">
+            👤
+        </span>
+
+        Account
+
+    </a>
+
+
+</nav>
+
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+<script>
+
+let currentUser = null;
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        await loadProfile();
+
+    }
+);
+
+
+/* =========================
+   LOAD PROFILE
+========================= */
+
+async function loadProfile(){
+
+    const message =
+        document.getElementById(
+            "profileMessage"
+        );
+
+
+    if(
+        typeof supabaseClient ===
+        "undefined"
+    ){
+
+        message.textContent =
+            "❌ Supabase connection नहीं मिला।";
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+    .auth
+    .getUser();
+
+
+    if(
+        error ||
+        !data ||
+        !data.user
+    ){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    const {
+        data:profile,
+        error:profileError
+    } =
+    await supabaseClient
+    .from("profiles")
+    .select(
+        "id,name,photo_url,age,gender,city,profession,bio"
+    )
+    .eq(
+        "id",
+        currentUser.id
+    )
+    .maybeSingle();
+
+
+    if(profileError){
+
+        message.textContent =
+            "❌ Profile load नहीं हुई: "+
+            profileError.message;
+
+        return;
+
+    }
+
+
+    if(!profile){
+
+        document.getElementById(
+            "profileTitle"
+        ).textContent =
+            "नई Profile";
+
+        return;
+
+    }
+
+
+    fillProfile(profile);
+
+}
+
+
+
+/* =========================
+   FILL PROFILE
+========================= */
+
+function fillProfile(profile){
+
+    document.getElementById(
+        "profileName"
+    ).value =
+        profile.name || "";
+
+
+    document.getElementById(
+        "profileAge"
+    ).value =
+        profile.age || "";
+
+
+    document.getElementById(
+        "profileGender"
+    ).value =
+        profile.gender || "";
+
+
+    document.getElementById(
+        "profileCity"
+    ).value =
+        profile.city || "";
+
+
+    document.getElementById(
+        "profileProfession"
+    ).value =
+        profile.profession || "";
+
+
+    document.getElementById(
+        "profileBio"
+    ).value =
+        profile.bio || "";
+
+
+    document.getElementById(
+        "profileTitle"
+    ).textContent =
+        profile.name ||
+        "My Profile";
+
+
+    if(profile.photo_url){
+
+        showPhoto(
+            profile.photo_url
+        );
+
+    }
+
+}
+
+
+
+/* =========================
+   SHOW PHOTO
+========================= */
+
+function showPhoto(url){
+
+    const avatar =
+        document.getElementById(
+            "profileAvatar"
+        );
+
+
+    avatar.innerHTML = "";
+
+
+    const img =
+        document.createElement(
+            "img"
+        );
+
+
+    img.src = url;
+
+    img.alt =
+        "Profile Photo";
+
+
+    avatar.appendChild(
+        img
+    );
+
+}
+
+
+
+/* =========================
+   PHOTO UPLOAD
+========================= */
+
+document
+.getElementById("photoInput")
+.addEventListener(
+    "change",
+    async function(){
+
+        const file =
+            this.files[0];
+
+
+        if(!file){
+            return;
+        }
+
+
+        if(
+            !file.type.startsWith(
+                "image/"
+            )
+        ){
+
+            alert(
+                "कृपया केवल फोटो चुनें।"
+            );
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        if(
+            file.size >
+            5 * 1024 * 1024
+        ){
+
+            alert(
+                "फोटो 5 MB से छोटी होनी चाहिए।"
+            );
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        const photoMessage =
+            document.getElementById(
+                "photoMessage"
+            );
+
+
+        photoMessage.textContent =
+            "📤 फोटो upload हो रही है...";
+
+
+        try{
+
+            const fileName =
+                Date.now() +
+                "-" +
+                file.name.replace(
+                    /[^a-zA-Z0-9._-]/g,
+                    "_"
+                );
+
+
+            const filePath =
+                currentUser.id +
+                "/" +
+                fileName;
+
+
+            const {
+                error:uploadError
+            } =
+            await supabaseClient
+            .storage
+            .from(
+                "profile-photos"
+            )
+            .upload(
+                filePath,
+                file,
+                {
+                    contentType:
+                        file.type,
+
+                    upsert:false
+                }
+            );
+
+
+            if(uploadError){
+
+                photoMessage.textContent =
+                    "❌ Photo upload failed";
+
+                alert(
+                    uploadError.message
+                );
+
+                return;
+
+            }
+
+
+            const {
+                data:publicData
+            } =
+            supabaseClient
+            .storage
+            .from(
+                "profile-photos"
+            )
+            .getPublicUrl(
+                filePath
+            );
+
+
+            const photoUrl =
+                publicData.publicUrl;
+
+
+            const {
+                error:updateError
+            } =
+            await supabaseClient
+            .from("profiles")
+            .update({
+
+                photo_url:
+                    photoUrl
+
+            })
+            .eq(
+                "id",
+                currentUser.id
+            );
+
+
+            if(updateError){
+
+                photoMessage.textContent =
+                    "❌ Photo save नहीं हुई";
+
+                alert(
+                    updateError.message
+                );
+
+                return;
+
+            }
+
+
+            showPhoto(
+                photoUrl
+            );
+
+
+            photoMessage.textContent =
+                "✅ फोटो successfully upload हो गई।";
+
+
+            this.value = "";
+
+
+        }catch(error){
+
+            console.log(error);
+
+            photoMessage.textContent =
+                "❌ Photo upload में समस्या हुई।";
+
+        }
+
+    }
+);
+
+
+
+/* =========================
+   SAVE PROFILE
+========================= */
+
+document
+.getElementById("profileForm")
+.addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const message =
+            document.getElementById(
+                "profileMessage"
+            );
+
+
+        const name =
+            document
+            .getElementById(
+                "profileName"
+            )
+            .value
+            .trim();
+
+
+        const age =
+            document
+            .getElementById(
+                "profileAge"
+            )
+            .value;
+
+
+        const gender =
+            document
+            .getElementById(
+                "profileGender"
+            )
+            .value;
+
+
+        const city =
+            document
+            .getElementById(
+                "profileCity"
+            )
+            .value
+            .trim();
+
+
+        const profession =
+            document
+            .getElementById(
+                "profileProfession"
+            )
+            .value
+            .trim();
+
+
+        const bio =
+            document
+            .getElementById(
+                "profileBio"
+            )
+            .value
+            .trim();
+
+
+        if(!name){
+
+            alert(
+                "कृपया अपना नाम भरें।"
+            );
+
+            return;
+
+        }
+
+
+        message.textContent =
+            "💾 Profile save हो रही है...";
+
+
+        const {
+            data:existing
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select("id")
+        .eq(
+            "id",
+            currentUser.id
+        )
+        .maybeSingle();
+
+
+        let error;
+
+
+        if(existing){
+
+            const result =
+                await supabaseClient
+                .from("profiles")
+                .update({
+
+                    name:name,
+
+                    age:
+                        age
+                        ? Number(age)
+                        : null,
+
+                    gender:
+                        gender || null,
+
+                    city:
+                        city || null,
+
+                    profession:
+                        profession || null,
+
+                    bio:
+                        bio || null
+
+                })
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+
+            error =
+                result.error;
+
+        }else{
+
+            const result =
+                await supabaseClient
+                .from("profiles")
+                .insert({
+
+                    id:
+                        currentUser.id,
+
+                    name:name,
+
+                    age:
+                        age
+                        ? Number(age)
+                        : null,
+
+                    gender:
+                        gender || null,
+
+                    city:
+                        city || null,
+
+                    profession:
+                        profession || null,
+
+                    bio:
+                        bio || null
+
+                });
+
+
+            error =
+                result.error;
+
+        }
+
+
+        if(error){
+
+            message.textContent =
+                "❌ Save failed: "+
+                error.message;
+
+            return;
+
+        }
+
+
+        document.getElementById(
+            "profileTitle"
+        ).textContent =
+            name;
+
+
+        message.textContent =
+            "✅ Profile successfully save हो गई।";
+
+
+        setTimeout(
+            function(){
+
+                message.textContent = "";
+
+            },
+            4000
+        );
+
+    }
+);
+
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+
+    if(
+        document.referrer &&
+        document.referrer.includes(
+            window.location.host
+        )
+    ){
+
+        history.back();
+
+    }else{
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>
