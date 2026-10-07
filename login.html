@@ -1,1 +1,713 @@
+<!DOCTYPE html>
+<html lang="hi">
 
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Sahnai Dating</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#fff0f5,#ffe4ed);
+    min-height:100vh;
+}
+
+.login-header{
+    height:70px;
+    padding:0 18px;
+    background:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    box-shadow:0 3px 15px rgba(0,0,0,.08);
+}
+
+.login-logo{
+    font-size:24px;
+    font-weight:bold;
+    color:#e91e63;
+}
+
+.home-btn{
+    border:none;
+    background:#e91e63;
+    color:white;
+
+    padding:10px 18px;
+    border-radius:25px;
+
+    font-size:14px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.login-page{
+    min-height:calc(100vh - 70px);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:25px 16px;
+}
+
+.login-card{
+    width:100%;
+    max-width:430px;
+
+    background:white;
+
+    border-radius:28px;
+
+    padding:30px 24px 28px;
+
+    box-shadow:
+        0 15px 45px
+        rgba(233,30,99,.15);
+}
+
+.login-icon{
+    width:78px;
+    height:78px;
+
+    margin:0 auto 15px;
+
+    border-radius:50%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4f81,
+            #e91e63
+        );
+
+    font-size:38px;
+
+    box-shadow:
+        0 8px 20px
+        rgba(233,30,99,.25);
+}
+
+.login-card h1{
+    text-align:center;
+
+    margin:5px 0 8px;
+
+    font-size:29px;
+
+    color:#222;
+}
+
+.login-card h1 span{
+    color:#e91e63;
+}
+
+.login-subtitle{
+    text-align:center;
+
+    color:#777;
+
+    font-size:15px;
+
+    margin:0 0 25px;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+.input-group label{
+    display:block;
+
+    margin-bottom:7px;
+
+    font-size:14px;
+    font-weight:bold;
+
+    color:#444;
+}
+
+.input-box{
+    position:relative;
+}
+
+.input-icon{
+    position:absolute;
+
+    left:15px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    font-size:20px;
+
+    z-index:2;
+}
+
+.login-input{
+    width:100%;
+
+    height:55px;
+
+    padding:0 48px;
+
+    border:1.5px solid #ddd;
+
+    border-radius:15px;
+
+    background:#fafafa;
+
+    font-size:16px;
+
+    outline:none;
+}
+
+.login-input:focus{
+    border-color:#e91e63;
+
+    background:white;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(233,30,99,.10);
+}
+
+.password-eye{
+    position:absolute;
+
+    right:14px;
+    top:50%;
+
+    transform:translateY(-50%);
+
+    border:none;
+
+    background:transparent;
+
+    font-size:21px;
+
+    cursor:pointer;
+
+    padding:5px;
+}
+
+.user-login-btn{
+    width:100%;
+
+    height:56px;
+
+    border:none;
+
+    border-radius:28px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e91e63,
+            #ff4f81
+        );
+
+    color:white;
+
+    font-size:17px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 8px 22px
+        rgba(233,30,99,.25);
+}
+
+.admin-login-btn{
+    width:100%;
+
+    height:52px;
+
+    margin-top:12px;
+
+    border:1.5px solid #e91e63;
+
+    border-radius:27px;
+
+    background:white;
+
+    color:#e91e63;
+
+    font-size:16px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.register-text{
+    text-align:center;
+
+    margin-top:22px;
+
+    color:#777;
+
+    font-size:14px;
+}
+
+.register-text button{
+    border:none;
+
+    background:none;
+
+    color:#e91e63;
+
+    font-weight:bold;
+
+    font-size:14px;
+
+    cursor:pointer;
+}
+
+.back-home{
+    width:100%;
+
+    height:48px;
+
+    margin-top:15px;
+
+    border:1.5px solid #ddd;
+
+    border-radius:25px;
+
+    background:#fafafa;
+
+    color:#555;
+
+    font-size:15px;
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.login-footer{
+    text-align:center;
+
+    margin-top:18px;
+
+    color:#aaa;
+
+    font-size:11px;
+
+    line-height:1.5;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="login-header">
+
+    <div class="login-logo">
+        💖 Sahnai Dating
+    </div>
+
+    <button
+        class="home-btn"
+        onclick="location.href='index.html'"
+    >
+        Home
+    </button>
+
+</header>
+
+
+
+<main class="login-page">
+
+<div class="login-card">
+
+
+    <div class="login-icon">
+        💕
+    </div>
+
+
+    <h1>
+        Welcome <span>Back</span>
+    </h1>
+
+
+    <p class="login-subtitle">
+        अपने Sahnai Dating Account में Login करें
+    </p>
+
+
+
+    <!-- EMAIL -->
+
+    <div class="input-group">
+
+        <label>
+            Email
+        </label>
+
+        <div class="input-box">
+
+            <span class="input-icon">
+                📧
+            </span>
+
+            <input
+                type="email"
+                id="loginEmail"
+                class="login-input"
+                placeholder="अपना Email लिखें"
+                required
+            >
+
+        </div>
+
+    </div>
+
+
+
+    <!-- PASSWORD -->
+
+    <div class="input-group">
+
+        <label>
+            Password
+        </label>
+
+        <div class="input-box">
+
+            <span class="input-icon">
+                🔒
+            </span>
+
+            <input
+                type="password"
+                id="loginPassword"
+                class="login-input"
+                placeholder="अपना Password लिखें"
+                required
+            >
+
+            <button
+                type="button"
+                class="password-eye"
+                id="togglePassword"
+            >
+                👁️
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- USER LOGIN -->
+
+    <button
+        type="button"
+        class="user-login-btn"
+        id="userLoginButton"
+    >
+        👤 User Login
+    </button>
+
+
+
+    <!-- ADMIN LOGIN -->
+
+    <button
+        type="button"
+        class="admin-login-btn"
+        id="adminLoginButton"
+    >
+        🔐 Admin Login
+    </button>
+
+
+
+    <!-- REGISTER -->
+
+    <div class="register-text">
+
+        नया Account बनाना है?
+
+        <button
+            onclick="location.href='register.html'"
+        >
+            Create Account
+        </button>
+
+    </div>
+
+
+
+    <!-- HOME -->
+
+    <button
+        type="button"
+        class="back-home"
+        onclick="location.href='index.html'"
+    >
+        ← Home Page पर जाएँ
+    </button>
+
+
+
+    <div class="login-footer">
+
+        🔒 आपका Account सुरक्षित है।
+
+        <br>
+
+        Sahnai Dating • Meet • Chat ❤️
+
+    </div>
+
+
+</div>
+
+</main>
+
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+
+
+<script>
+
+
+/* PASSWORD SHOW / HIDE */
+
+document
+.getElementById("togglePassword")
+.addEventListener(
+    "click",
+    function(){
+
+        const password =
+            document.getElementById(
+                "loginPassword"
+            );
+
+        if(password.type==="password"){
+
+            password.type="text";
+
+            this.textContent="🙈";
+
+        }else{
+
+            password.type="password";
+
+            this.textContent="👁️";
+
+        }
+
+    }
+);
+
+
+
+/* USER LOGIN */
+
+document
+.getElementById("userLoginButton")
+.addEventListener(
+    "click",
+    async function(){
+
+        await doLogin("user");
+
+    }
+);
+
+
+
+/* ADMIN LOGIN */
+
+document
+.getElementById("adminLoginButton")
+.addEventListener(
+    "click",
+    async function(){
+
+        await doLogin("admin");
+
+    }
+);
+
+
+
+/* LOGIN FUNCTION */
+
+async function doLogin(loginType){
+
+    const email =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
+
+
+    const password =
+        document
+        .getElementById("loginPassword")
+        .value;
+
+
+    if(!email || !password){
+
+        alert(
+            "Email और Password दोनों भरें।"
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+        .auth
+        .signInWithPassword({
+
+            email:email,
+
+            password:password
+
+        });
+
+
+    if(error){
+
+        alert(
+            "Login failed: "+
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    if(!data || !data.user){
+
+        alert(
+            "Login नहीं हो पाया।"
+        );
+
+        return;
+
+    }
+
+
+
+    /* USER LOGIN */
+
+    if(loginType==="user"){
+
+        alert(
+            "User Login सफल हो गया! 😊"
+        );
+
+        window.location.replace(
+            "dashboard.html"
+        );
+
+        return;
+
+    }
+
+
+
+    /* ADMIN CHECK */
+
+    const {
+        data:adminData,
+        error:adminError
+    } =
+        await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq(
+            "user_id",
+            data.user.id
+        )
+        .maybeSingle();
+
+
+    if(adminError){
+
+        alert(
+            "Admin check में समस्या: "+
+            adminError.message
+        );
+
+        return;
+
+    }
+
+
+    if(!adminData){
+
+        alert(
+            "इस Account को Admin permission नहीं मिली है।"
+        );
+
+        return;
+
+    }
+
+
+    /* ADMIN SUCCESS */
+
+    alert(
+        "Admin Login सफल हो गया! 🔐"
+    );
+
+
+    window.location.replace(
+        "admin.html"
+    );
+
+}
+
+</script>
+
+
+</body>
+
+</html>
