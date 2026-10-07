@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Friends - Sahnai Dating</title>
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#fff5f8;
+    color:#222;
+    padding-bottom:80px;
+}
+
+.header{
+    height:68px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 16px;
+    box-shadow:0 2px 12px rgba(0,0,0,.08);
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    color:#e91e63;
+    font-size:23px;
+    font-weight:bold;
+}
+
+.header-btn{
+    border:none;
+    background:#ffe3ed;
+    color:#e91e63;
+    padding:9px 15px;
+    border-radius:22px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.container{
+    width:100%;
+    max-width:850px;
+    margin:auto;
+    padding:22px 16px 35px;
+}
+
+.page-title{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.page-title h1{
+    margin:0;
+    font-size:30px;
+}
+
+.page-title h1 span{
+    color:#e91e63;
+}
+
+.page-title p{
+    margin:8px 0 0;
+    color:#777;
+    font-size:15px;
+}
+
+.refresh-btn{
+    width:100%;
+    height:50px;
+    border:2px solid #ffd0df;
+    background:white;
+    color:#e91e63;
+    border-radius:28px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    margin:10px 0 18px;
+}
+
+.refresh-btn:disabled{
+    opacity:.6;
+}
+
+.count-box{
+    background:#ffe0eb;
+    color:#e91e63;
+    width:max-content;
+    margin:0 auto 18px;
+    padding:8px 18px;
+    border-radius:25px;
+    font-weight:bold;
+    font-size:14px;
+}
+
+.friend-card{
+    background:white;
+    border-radius:24px;
+    padding:17px;
+    margin-bottom:15px;
+    display:flex;
+    align-items:center;
+    gap:15px;
+    box-shadow:0 6px 20px rgba(0,0,0,.07);
+}
+
+.friend-photo{
+    width:82px;
+    height:82px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#ffe1eb;
+    border:4px solid #ffe3ed;
+    flex-shrink:0;
+}
+
+.friend-info{
+    flex:1;
+    min-width:0;
+}
+
+.friend-name{
+    font-size:20px;
+    font-weight:bold;
+    color:#333;
+    margin-bottom:5px;
+}
+
+.match-label{
+    display:inline-block;
+    background:#e8fff0;
+    color:#16a34a;
+    padding:4px 9px;
+    border-radius:15px;
+    font-size:12px;
+    font-weight:bold;
+    margin-bottom:5px;
+}
+
+.friend-details{
+    color:#777;
+    font-size:14px;
+    line-height:1.6;
+}
+
+.friend-actions{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.chat-btn,
+.profile-btn{
+    border:none;
+    min-width:100px;
+    padding:10px 12px;
+    border-radius:22px;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.chat-btn{
+    background:#e91e63;
+    color:white;
+}
+
+.profile-btn{
+    background:#ffe3ed;
+    color:#e91e63;
+}
+
+.empty-box{
+    background:white;
+    border-radius:24px;
+    padding:45px 20px;
+    text-align:center;
+    box-shadow:0 6px 20px rgba(0,0,0,.06);
+}
+
+.empty-icon{
+    font-size:55px;
+    margin-bottom:12px;
+}
+
+.empty-box h2{
+    margin:5px 0 10px;
+    color:#333;
+}
+
+.empty-box p{
+    margin:0;
+    color:#777;
+    line-height:1.6;
+}
+
+.find-btn{
+    margin-top:20px;
+    border:none;
+    background:#e91e63;
+    color:white;
+    padding:13px 25px;
+    border-radius:25px;
+    font-size:15px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.loading{
+    text-align:center;
+    padding:35px;
+    color:#777;
+}
+
+.bottom-nav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:70px;
+    background:white;
+    border-top:1px solid #eee;
+    box-shadow:0 -4px 18px rgba(0,0,0,.08);
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+    z-index:100;
+}
+
+.nav-item{
+    flex:1;
+    max-width:130px;
+    border:none;
+    background:transparent;
+    color:#777;
+    text-align:center;
+    font-size:10px;
+    cursor:pointer;
+    padding:6px 2px;
+}
+
+.nav-icon{
+    display:block;
+    font-size:22px;
+    margin-bottom:3px;
+}
+
+.nav-item.active{
+    color:#e91e63;
+    font-weight:bold;
+}
+
+@media(max-width:600px){
+
+    .logo{
+        font-size:20px;
+    }
+
+    .header-btn{
+        padding:8px 12px;
+        font-size:12px;
+    }
+
+    .page-title h1{
+        font-size:27px;
+    }
+
+    .friend-card{
+        padding:14px;
+        gap:10px;
+    }
+
+    .friend-photo{
+        width:65px;
+        height:65px;
+    }
+
+    .friend-name{
+        font-size:18px;
+    }
+
+    .friend-details{
+        font-size:12px;
+    }
+
+    .friend-actions{
+        margin-left:auto;
+    }
+
+    .chat-btn,
+    .profile-btn{
+        min-width:78px;
+        padding:8px 9px;
+        font-size:11px;
+    }
+}
+
+@media(max-width:380px){
+
+    .friend-card{
+        flex-wrap:wrap;
+    }
+
+    .friend-actions{
+        width:100%;
+        flex-direction:row;
+        margin-left:0;
+    }
+
+    .chat-btn,
+    .profile-btn{
+        flex:1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo">
+        💖 Sahnai Dating
+    </div>
+
+    <button
+        class="header-btn"
+        onclick="goFindPeople()">
+        🔎 Find
+    </button>
+
+</header>
+
+<main class="container">
+
+    <div class="page-title">
+
+        <h1>
+            ❤️ My <span>Friends</span>
+        </h1>
+
+        <p>
+            आपके सभी Mutual Matches
+        </p>
+
+    </div>
+
+    <div
+        class="count-box"
+        id="friendCount">
+        0 Friends
+    </div>
+
+    <button
+        id="refreshButton"
+        class="refresh-btn">
+        🔄 Friends Refresh करें
+    </button>
+
+    <div id="friendsList">
+
+        <div class="loading">
+            ❤️ Friends loading...
+        </div>
+
+    </div>
+
+</main>
+
+<nav class="bottom-nav">
+
+    <button
+        class="nav-item"
+        onclick="goHome()">
+        <span class="nav-icon">🏠</span>
+        Home
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="goFindPeople()">
+        <span class="nav-icon">🔎</span>
+        Find People
+    </button>
+
+    <button
+        class="nav-item active"
+        onclick="goFriends()">
+        <span class="nav-icon">❤️</span>
+        Friends
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="goMessages()">
+        <span class="nav-icon">💬</span>
+        Messages
+    </button>
+
+    <button
+        class="nav-item"
+        onclick="goAccount()">
+        <span class="nav-icon">👤</span>
+        Account
+    </button>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<script>
+
+let currentUser = null;
+let blockedUsers = new Set();
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getUser();
+
+        if(error || !data.user){
+
+            window.location.href="login.html";
+            return;
+
+        }
+
+        currentUser=data.user;
+
+        await loadBlockedUsers();
+        await loadFriends();
+
+        document
+        .getElementById("refreshButton")
+        .addEventListener(
+            "click",
+            async function(){
+
+                this.disabled=true;
+                this.textContent="⏳ Loading...";
+
+                await loadBlockedUsers();
+                await loadFriends();
+
+                this.disabled=false;
+                this.textContent="🔄 Friends Refresh करें";
+
+            }
+        );
+
+    }
+);
+
+
+async function loadBlockedUsers(){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+    .from("blocks")
+    .select("blocked_user_id")
+    .eq(
+        "blocker_id",
+        currentUser.id
+    );
+
+    if(error){
+
+        blockedUsers=new Set();
+
+        console.log(
+            "Block load error:",
+            error.message
+        );
+
+        return;
+
+    }
+
+    blockedUsers=new Set(
+        (data || []).map(
+            item=>item.blocked_user_id
+        )
+    );
+
+}
+
+
+async function loadFriends(){
+
+    const list=
+        document.getElementById("friendsList");
+
+    const count=
+        document.getElementById("friendCount");
+
+    list.innerHTML=`
+        <div class="loading">
+            ❤️ Friends load हो रहे हैं...
+        </div>
+    `;
+
+    const {
+        data:matches,
+        error
+    } =
+    await supabaseClient
+    .from("matches")
+    .select(
+        "id,user1_id,user2_id,created_at"
+    )
+    .or(
+        "user1_id.eq."+currentUser.id+
+        ",user2_id.eq."+currentUser.id
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+    if(error){
+
+        list.innerHTML=`
+            <div class="empty-box">
+
+                <div class="empty-icon">⚠️</div>
+
+                <h2>
+                    Friends load नहीं हुए
+                </h2>
+
+                <p>
+                    ${escapeHtml(error.message)}
+                </p>
+
+            </div>
+        `;
+
+        return;
+
+    }
+
+    if(
+        !matches ||
+        matches.length===0
+    ){
+
+        showNoFriends();
+        return;
+
+    }
+
+    list.innerHTML="";
+
+    let shownCount=0;
+
+    for(
+        const match of matches
+    ){
+
+        const friendId=
+            match.user1_id===currentUser.id
+            ? match.user2_id
+            : match.user1_id;
+
+        if(
+            blockedUsers.has(friendId)
+        ){
+
+            continue;
+
+        }
+
+        const {
+            data:friend,
+            error:friendError
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select(
+            "id,name,age,gender,city,profession,photo_url"
+        )
+        .eq(
+            "id",
+            friendId
+        )
+        .maybeSingle();
+
+        if(
+            friendError ||
+            !friend
+        ){
+
+            continue;
+
+        }
+
+        if(
+            blockedUsers.has(friend.id)
+        ){
+
+            continue;
+
+        }
+
+        createFriendCard(
+            friend,
+            list
+        );
+
+        shownCount++;
+
+    }
+
+    count.textContent=
+        shownCount+
+        (
+            shownCount===1
+            ? " Friend"
+            : " Friends"
+        );
+
+    if(shownCount===0){
+
+        showNoFriends();
+
+    }
+
+}
+
+
+function createFriendCard(
+    friend,
+    list
+){
+
+    const card=
+        document.createElement("div");
+
+    card.className="friend-card";
+
+    const photo=
+        friend.photo_url ||
+        "https://via.placeholder.com/150?text=User";
+
+    card.innerHTML=`
+
+        <img
+            class="friend-photo"
+            src="${escapeHtml(photo)}"
+            alt="Friend"
+        >
+
+        <div class="friend-info">
+
+            <div class="friend-name">
+                💕 ${escapeHtml(
+                    friend.name || "User"
+                )}
+            </div>
+
+            <div class="match-label">
+                💚 Mutual Match
+            </div>
+
+            <div class="friend-details">
+
+                ${
+                    friend.age
+                    ? "🎂 "+
+                      escapeHtml(friend.age)+
+                      " वर्ष"
+                    : ""
+                }
+
+                ${
+                    friend.gender
+                    ? " • "+
+                      escapeHtml(friend.gender)
+                    : ""
+                }
+
+                ${
+                    friend.city
+                    ? "<br>📍 "+
+                      escapeHtml(friend.city)
+                    : ""
+                }
+
+                ${
+                    friend.profession
+                    ? "<br>💼 "+
+                      escapeHtml(friend.profession)
+                    : ""
+                }
+
+            </div>
+
+        </div>
+
+        <div class="friend-actions">
+
+            <button
+                class="chat-btn"
+                type="button">
+                💬 Chat
+            </button>
+
+            <button
+                class="profile-btn"
+                type="button">
+                👤 Profile
+            </button>
+
+        </div>
+
+    `;
+
+    const chatButton=
+        card.querySelector(".chat-btn");
+
+    const profileButton=
+        card.querySelector(".profile-btn");
+
+    chatButton.addEventListener(
+        "click",
+        function(){
+
+            if(
+                blockedUsers.has(friend.id)
+            ){
+
+                alert("यह User Block है।");
+                return;
+
+            }
+
+            openChat(
+                friend.name || "User",
+                friend.id
+            );
+
+        }
+    );
+
+    profileButton.addEventListener(
+        "click",
+        function(){
+
+            if(
+                blockedUsers.has(friend.id)
+            ){
+
+                alert("यह User Block है।");
+                return;
+
+            }
+
+            viewProfile(friend.id);
+
+        }
+    );
+
+    list.appendChild(card);
+
+}
+
+
+function showNoFriends(){
+
+    const count=
+        document.getElementById("friendCount");
+
+    const list=
+        document.getElementById("friendsList");
+
+    count.textContent="0 Friends";
+
+    list.innerHTML=`
+
+        <div class="empty-box">
+
+            <div class="empty-icon">
+                💕
+            </div>
+
+            <h2>
+                अभी कोई Friend नहीं है
+            </h2>
+
+            <p>
+                जब आपका किसी user के साथ
+                mutual match होगा,
+                वह यहाँ दिखाई देगा।
+            </p>
+
+            <button
+                class="find-btn"
+                onclick="goFindPeople()">
+                🔎 Find People
+            </button>
+
+        </div>
+
+    `;
+
+}
+
+
+function openChat(name,id){
+
+    window.location.href=
+        "chat.html?user="+
+        encodeURIComponent(name)+
+        "&id="+
+        encodeURIComponent(id);
+
+}
+
+
+function viewProfile(id){
+
+    window.location.href=
+        "view-profile.html?id="+
+        encodeURIComponent(id);
+
+}
+
+
+function goHome(){
+
+    window.location.href="index.html";
+
+}
+
+
+function goFindPeople(){
+
+    window.location.href="users.html";
+
+}
+
+
+/* IMPORTANT: Friends = matches.html */
+
+function goFriends(){
+
+    window.location.href="matches.html";
+
+}
+
+
+function goMessages(){
+
+    window.location.href="messages.html";
+
+}
+
+
+function goAccount(){
+
+    window.location.href="dashboard.html";
+
+}
+
+
+function escapeHtml(value){
+
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+</script>
+
+</body>
+</html>
