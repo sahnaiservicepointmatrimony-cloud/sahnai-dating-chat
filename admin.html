@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Panel - Connect</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f5f5ff;
+  color:#222;
+}
+
+.header{
+  background:linear-gradient(135deg,#4f46e5,#5b4ee8);
+  color:white;
+  padding:24px 15px;
+  text-align:center;
+  font-size:34px;
+  font-weight:bold;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:30px 18px 50px;
+}
+
+.title{
+  text-align:center;
+  font-size:38px;
+  font-weight:bold;
+  margin:20px 0 35px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:25px;
+}
+
+.stat{
+  background:white;
+  border-radius:28px;
+  padding:38px 15px;
+  text-align:center;
+  box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.stat-icon{
+  font-size:65px;
+  margin-bottom:15px;
+}
+
+.stat-number{
+  font-size:50px;
+  font-weight:bold;
+  color:#4f46e5;
+}
+
+.stat-name{
+  font-size:25px;
+  color:#666;
+  margin-top:8px;
+}
+
+.menu{
+  margin-top:35px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+.btn{
+  border:0;
+  width:100%;
+  padding:20px;
+  border-radius:40px;
+  font-size:23px;
+  font-weight:bold;
+  color:white;
+  cursor:pointer;
+}
+
+.blue{
+  background:#4f46e5;
+}
+
+.red{
+  background:#ef2b2b;
+}
+
+.green{
+  background:#16a34a;
+}
+
+.orange{
+  background:#f97316;
+}
+
+.purple{
+  background:#9333ea;
+}
+
+.gray{
+  background:#555;
+}
+
+.status{
+  background:white;
+  border-radius:22px;
+  padding:18px;
+  margin-top:25px;
+  text-align:center;
+  font-size:20px;
+  color:#198754;
+  box-shadow:0 4px 15px rgba(0,0,0,.06);
+}
+
+@media(max-width:600px){
+
+  .header{
+    font-size:30px;
+  }
+
+  .title{
+    font-size:31px;
+  }
+
+  .stats{
+    gap:15px;
+  }
+
+  .stat{
+    padding:28px 10px;
+  }
+
+  .stat-icon{
+    font-size:52px;
+  }
+
+  .stat-number{
+    font-size:42px;
+  }
+
+  .stat-name{
+    font-size:19px;
+  }
+
+  .btn{
+    font-size:20px;
+    padding:18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  🔐 Admin Panel
+</div>
+
+<div class="container">
+
+  <div class="title">
+    💗 Dating App Dashboard
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-icon">👥</div>
+      <div class="stat-number" id="totalUsers">0</div>
+      <div class="stat-name">Total Users</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">🚫</div>
+      <div class="stat-number" id="globalBlocked">0</div>
+      <div class="stat-name">Global Blocked</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">⚠️</div>
+      <div class="stat-number" id="totalReports">0</div>
+      <div class="stat-name">Reports</div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">💕</div>
+      <div class="stat-number" id="totalMatches">0</div>
+      <div class="stat-name">Matches</div>
+    </div>
+
+  </div>
+
+  <div id="status" class="status">
+    🔄 Dashboard data load हो रहा है...
+  </div>
+
+  <div class="menu">
+
+    <button class="btn blue" onclick="go('admin-users.html')">
+      👥 All Users देखें
+    </button>
+
+    <button class="btn red" onclick="go('admin-blocked.html')">
+      🚫 Global Blocked Users
+    </button>
+
+    <button class="btn orange" onclick="go('admin-reports.html')">
+      ⚠️ User Reports देखें
+    </button>
+
+    <button class="btn purple" onclick="go('admin-matches.html')">
+      💕 All Matches देखें
+    </button>
+
+    <button class="btn green" onclick="go('admin-trash.html')">
+      🗑️ Trash / Deleted Users
+    </button>
+
+    <button class="btn gray" onclick="refreshDashboard()">
+      🔄 Dashboard Refresh करें
+    </button>
+
+    <button class="btn gray" onclick="logout()">
+      🚪 Admin Logout
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+function go(page){
+  window.location.href = page;
+}
+
+
+/* =========================
+   ADMIN CHECK
+========================= */
+
+async function checkAdmin(){
+
+  const {
+    data:{user},
+    error
+  } = await supabaseClient.auth.getUser();
+
+  if(error || !user){
+    alert("कृपया पहले Login करें।");
+    window.location.href="login.html";
+    return null;
+  }
+
+  const {data:adminData,error:adminError} =
+    await supabaseClient
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id",user.id)
+      .maybeSingle();
+
+  if(adminError || !adminData){
+
+    alert("आप Admin नहीं हैं।");
+
+    window.location.href="users.html";
+
+    return null;
+  }
+
+  return user;
+}
+
+
+/* =========================
+   LOAD DASHBOARD
+========================= */
+
+async function loadDashboard(){
+
+  const user = await checkAdmin();
+
+  if(!user) return;
+
+
+  /* TOTAL USERS */
+
+  const {
+    count:userCount,
+    error:userError
+  } = await supabaseClient
+    .from("profiles")
+    .select("id",{
+      count:"exact",
+      head:true
+    })
+    .is("deleted_at",null);
+
+  if(!userError){
+
+    document.getElementById("totalUsers").textContent =
+      userCount || 0;
+  }
+
+
+  /* =========================
+     GLOBAL BLOCKED
+     
+     Admin द्वारा blocks table
+     में blocked users
+  ========================= */
+
+  const {
+    data:blockedData,
+    error:blockedError
+  } = await supabaseClient
+    .from("blocks")
+    .select("blocked_user_id")
+    .eq("blocker_id",user.id);
+
+  if(blockedError){
+
+    console.log(
+      "Global block count error:",
+      blockedError.message
+    );
+
+    document.getElementById("globalBlocked").textContent="0";
+
+  }else{
+
+    const uniqueBlocked = new Set();
+
+    (blockedData || []).forEach(function(row){
+
+      if(row.blocked_user_id){
+
+        uniqueBlocked.add(row.blocked_user_id);
+
+      }
+
+    });
+
+    document.getElementById("globalBlocked").textContent =
+      uniqueBlocked.size;
+  }
+
+
+  /* REPORTS */
+
+  const {
+    count:reportCount,
+    error:reportError
+  } = await supabaseClient
+    .from("reports")
+    .select("id",{
+      count:"exact",
+      head:true
+    });
+
+  if(!reportError){
+
+    document.getElementById("totalReports").textContent =
+      reportCount || 0;
+  }
+
+
+  /* MATCHES */
+
+  const {
+    count:matchCount,
+    error:matchError
+  } = await supabaseClient
+    .from("matches")
+    .select("id",{
+      count:"exact",
+      head:true
+    });
+
+  if(!matchError){
+
+    document.getElementById("totalMatches").textContent =
+      matchCount || 0;
+  }
+
+
+  document.getElementById("status").textContent =
+    "✅ Dashboard successfully load हो गया।";
+}
+
+
+/* =========================
+   REFRESH
+========================= */
+
+async function refreshDashboard(){
+
+  document.getElementById("status").textContent =
+    "🔄 Dashboard Refresh हो रहा है...";
+
+  await loadDashboard();
+}
+
+
+/* =========================
+   LOGOUT
+========================= */
+
+async function logout(){
+
+  const ok = confirm(
+    "क्या आप Admin Logout करना चाहते हैं?"
+  );
+
+  if(!ok) return;
+
+  const {error} =
+    await supabaseClient.auth.signOut();
+
+  if(error){
+
+    alert(
+      "Logout failed: " + error.message
+    );
+
+    return;
+  }
+
+  window.location.href="index.html";
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    loadDashboard();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
