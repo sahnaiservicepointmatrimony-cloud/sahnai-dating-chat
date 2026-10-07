@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Chat - Connect</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    font-family:Arial,sans-serif;
+    background:#f8f5ff;
+    overflow:hidden;
+}
+
+.chat-app{
+    width:100%;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* HEADER */
+
+.chat-header{
+    height:76px;
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:8px 10px;
+    gap:10px;
+    flex-shrink:0;
+    box-shadow:0 3px 15px rgba(233,30,99,.25);
+    position:relative;
+    z-index:10;
+}
+
+.back-btn{
+    width:43px;
+    height:43px;
+    border:none;
+    background:rgba(255,255,255,.16);
+    color:white;
+    border-radius:50%;
+    font-size:28px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.chat-photo{
+    width:54px;
+    height:54px;
+    border-radius:50%;
+    object-fit:cover;
+    background:#eee;
+    border:3px solid white;
+    flex-shrink:0;
+}
+
+.chat-user-info{
+    flex:1;
+    min-width:0;
+}
+
+.chat-user-name{
+    font-size:21px;
+    font-weight:bold;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.chat-status{
+    margin-top:3px;
+    font-size:12px;
+    color:#ffe5ee;
+    font-weight:bold;
+}
+
+.online-dot{
+    display:inline-block;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    margin-right:4px;
+    background:#777;
+}
+
+.online-dot.online{
+    background:#20e070;
+    box-shadow:0 0 7px rgba(32,224,112,.8);
+}
+
+.profile-top-btn{
+    border:none;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:rgba(255,255,255,.16);
+    color:white;
+    font-size:21px;
+    cursor:pointer;
+    flex-shrink:0;
+}
+
+/* MESSAGES */
+
+#messages{
+    flex:1;
+    overflow-y:auto;
+    padding:20px 13px 18px;
+    background:linear-gradient(180deg,#fff5f8 0%,#f8f5ff 100%);
+    scroll-behavior:smooth;
+}
+
+#messages::-webkit-scrollbar{
+    width:5px;
+}
+
+#messages::-webkit-scrollbar-thumb{
+    background:#e8b8ca;
+    border-radius:10px;
+}
+
+.empty-chat{
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    color:#888;
+}
+
+.empty-chat-icon{
+    font-size:55px;
+    margin-bottom:10px;
+}
+
+/* MESSAGE */
+
+.message{
+    max-width:80%;
+    margin-bottom:12px;
+    padding:11px 14px;
+    border-radius:19px;
+    position:relative;
+    box-shadow:0 3px 10px rgba(0,0,0,.07);
+    word-wrap:break-word;
+    animation:messageIn .18s ease;
+}
+
+@keyframes messageIn{
+
+    from{
+        opacity:0;
+        transform:translateY(7px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+
+}
+
+.message.sent{
+    margin-left:auto;
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+    border-bottom-right-radius:5px;
+}
+
+.message.received{
+    margin-right:auto;
+    background:white;
+    color:#222;
+    border-bottom-left-radius:5px;
+    border:1px solid #f0e7eb;
+}
+
+.message-text{
+    display:block;
+    font-size:16px;
+    line-height:1.45;
+    white-space:pre-wrap;
+}
+
+.message-time{
+    display:block;
+    text-align:right;
+    margin-top:5px;
+    font-size:10px;
+    opacity:.72;
+}
+
+.read-status{
+    font-size:14px;
+    font-weight:bold;
+    margin-left:5px;
+}
+
+/* INPUT */
+
+.chat-input-area{
+    min-height:76px;
+    background:white;
+    border-top:1px solid #eee;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    padding:9px 10px;
+    flex-shrink:0;
+    box-shadow:0 -4px 18px rgba(0,0,0,.08);
+}
+
+#messageInput{
+    flex:1;
+    height:52px;
+    border:1.5px solid #ddd;
+    border-radius:27px;
+    outline:none;
+    padding:0 18px;
+    font-size:16px;
+    background:#fafafa;
+    color:#222;
+}
+
+#messageInput:focus{
+    border-color:#e91e63;
+    background:white;
+    box-shadow:0 0 0 3px rgba(233,30,99,.08);
+}
+
+#messageInput::placeholder{
+    color:#999;
+}
+
+.send-btn{
+    width:52px;
+    height:52px;
+    border:none;
+    border-radius:50%;
+    background:linear-gradient(135deg,#e91e63,#ff4f81);
+    color:white;
+    font-size:25px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    box-shadow:0 5px 15px rgba(233,30,99,.28);
+}
+
+.send-btn:active{
+    transform:scale(.92);
+}
+
+@media(max-width:600px){
+
+    .chat-header{
+        height:74px;
+        padding:7px;
+    }
+
+    .back-btn{
+        width:40px;
+        height:40px;
+        font-size:26px;
+    }
+
+    .chat-photo{
+        width:52px;
+        height:52px;
+    }
+
+    .chat-user-name{
+        font-size:20px;
+    }
+
+    .chat-status{
+        font-size:11px;
+    }
+
+    .profile-top-btn{
+        width:40px;
+        height:40px;
+        font-size:19px;
+    }
+
+    #messages{
+        padding:18px 10px 16px;
+    }
+
+    .message{
+        max-width:84%;
+        padding:10px 13px;
+        border-radius:18px;
+    }
+
+    .message-text{
+        font-size:16px;
+    }
+
+    .chat-input-area{
+        min-height:70px;
+        padding:8px;
+    }
+
+    #messageInput{
+        height:50px;
+        font-size:16px;
+        padding:0 16px;
+    }
+
+    .send-btn{
+        width:50px;
+        height:50px;
+        font-size:23px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="chat-app">
+
+<header class="chat-header">
+
+    <button
+        class="back-btn"
+        type="button"
+        onclick="goBack()">
+        ←
+    </button>
+
+    <img
+        id="chatPhoto"
+        class="chat-photo"
+        src="https://via.placeholder.com/100?text=User"
+        alt="User"
+    >
+
+    <div class="chat-user-info">
+
+        <div
+            id="chatUserName"
+            class="chat-user-name">
+            User
+        </div>
+
+        <div
+            id="chatStatus"
+            class="chat-status">
+
+            <span
+                id="onlineDot"
+                class="online-dot">
+            </span>
+
+            <span id="statusText">
+                Status checking...
+            </span>
+
+        </div>
+
+    </div>
+
+    <button
+        class="profile-top-btn"
+        type="button"
+        onclick="openChatProfile()">
+        👤
+    </button>
+
+</header>
+
+
+<main id="messages">
+
+    <div class="empty-chat">
+
+        <div>
+
+            <div class="empty-chat-icon">
+                💬
+            </div>
+
+            <div>
+                Chat loading...
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer class="chat-input-area">
+
+    <input
+        type="text"
+        id="messageInput"
+        placeholder="Message लिखें..."
+        autocomplete="off"
+        maxlength="2000"
+    >
+
+    <button
+        type="button"
+        id="sendButton"
+        class="send-btn"
+        onclick="sendMessage()">
+        ➤
+    </button>
+
+</footer>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+<script src="app.js"></script>
+
+
+<script>
+
+/* =========================
+   VARIABLES
+========================= */
+
+let chatFriendId = null;
+let statusTimer = null;
+let myHeartbeatTimer = null;
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+
+    window.location.href =
+        "messages.html";
+
+}
+
+
+/* =========================
+   OPEN PROFILE
+========================= */
+
+function openChatProfile(){
+
+    if(!chatFriendId){
+        return;
+    }
+
+    window.location.href =
+        "view-profile.html?id="+
+        encodeURIComponent(chatFriendId);
+
+}
+
+
+/* =========================
+   UPDATE MY LAST SEEN
+========================= */
+
+async function updateMyLastSeen(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+        .auth
+        .getUser();
+
+        if(error || !data.user){
+            return;
+        }
+
+        await supabaseClient
+        .from("profiles")
+        .update({
+            last_seen:new Date().toISOString()
+        })
+        .eq(
+            "id",
+            data.user.id
+        );
+
+    }catch(error){
+
+        console.log(
+            "Last seen update error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================
+   FRIEND STATUS
+========================= */
+
+async function updateFriendStatus(){
+
+    if(!chatFriendId){
+        return;
+    }
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+        .from("profiles")
+        .select(
+            "name,last_seen,photo_url"
+        )
+        .eq(
+            "id",
+            chatFriendId
+        )
+        .maybeSingle();
+
+
+        if(error || !data){
+            return;
+        }
+
+
+        const nameBox =
+            document.getElementById(
+                "chatUserName"
+            );
+
+        if(data.name && nameBox){
+
+            nameBox.textContent =
+                data.name;
+
+        }
+
+
+        if(data.photo_url){
+
+            document.getElementById(
+                "chatPhoto"
+            ).src =
+                data.photo_url;
+
+        }
+
+
+        const statusText =
+            document.getElementById(
+                "statusText"
+            );
+
+        const onlineDot =
+            document.getElementById(
+                "onlineDot"
+            );
+
+
+        if(!statusText || !onlineDot){
+            return;
+        }
+
+
+        if(!data.last_seen){
+
+            onlineDot.classList.remove(
+                "online"
+            );
+
+            statusText.textContent =
+                "⚪ Offline";
+
+            return;
+
+        }
+
+
+        const lastTime =
+            new Date(
+                data.last_seen
+            ).getTime();
+
+
+        const difference =
+            Date.now()-lastTime;
+
+
+        /*
+           2 मिनट के अंदर active
+           = Online
+        */
+
+        if(
+            difference <=
+            2*60*1000
+        ){
+
+            onlineDot.classList.add(
+                "online"
+            );
+
+            statusText.textContent =
+                "🟢 Online";
+
+            return;
+
+        }
+
+
+        onlineDot.classList.remove(
+            "online"
+        );
+
+
+        /*
+           1 घंटे के अंदर
+        */
+
+        if(
+            difference <
+            60*60*1000
+        ){
+
+            const minutes =
+                Math.max(
+                    1,
+                    Math.floor(
+                        difference/60000
+                    )
+                );
+
+            statusText.textContent =
+                "⚪ "+
+                minutes+
+                " मिनट पहले Active";
+
+            return;
+
+        }
+
+
+        /*
+           24 घंटे के अंदर
+        */
+
+        if(
+            difference <
+            24*60*60*1000
+        ){
+
+            const hours =
+                Math.floor(
+                    difference/3600000
+                );
+
+            statusText.textContent =
+                "⚪ "+
+                hours+
+                " घंटे पहले Active";
+
+            return;
+
+        }
+
+
+        /*
+           पुराना Last Seen
+        */
+
+        const date =
+            new Date(
+                data.last_seen
+            );
+
+
+        const dateText =
+            date.toLocaleDateString(
+                "hi-IN",
+                {
+                    day:"numeric",
+                    month:"short"
+                }
+            );
+
+
+        statusText.textContent =
+            "⚪ Last seen "+
+            dateText;
+
+    }catch(error){
+
+        console.log(
+            "Friend status error:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================
+   START STATUS
+========================= */
+
+async function startOnlineStatus(){
+
+    await updateMyLastSeen();
+
+    await updateFriendStatus();
+
+
+    /*
+       अपनी last_seen हर 30 सेकंड
+       update करेंगे
+    */
+
+    myHeartbeatTimer =
+        setInterval(
+            updateMyLastSeen,
+            30000
+        );
+
+
+    /*
+       सामने वाले का status
+       हर 10 सेकंड check
+    */
+
+    statusTimer =
+        setInterval(
+            updateFriendStatus,
+            10000
+        );
+
+}
+
+
+/* =========================
+   LOAD CHAT USER
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+
+        chatFriendId =
+            params.get("id");
+
+
+        const friendName =
+            params.get("user") ||
+            "User";
+
+
+        const nameBox =
+            document.getElementById(
+                "chatUserName"
+            );
+
+
+        if(nameBox){
+
+            nameBox.textContent =
+                friendName;
+
+        }
+
+
+        if(!chatFriendId){
+
+            return;
+
+        }
+
+
+        await startOnlineStatus();
+
+    }
+);
+
+
+/* =========================
+   ENTER TO SEND
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const input =
+            document.getElementById(
+                "messageInput"
+            );
+
+
+        if(!input){
+            return;
+        }
+
+
+        input.addEventListener(
+            "keydown",
+            function(event){
+
+                if(
+                    event.key === "Enter" &&
+                    !event.shiftKey
+                ){
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================
+   PHOTO ERROR
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const photo =
+            document.getElementById(
+                "chatPhoto"
+            );
+
+
+        if(!photo){
+            return;
+        }
+
+
+        photo.onerror =
+        function(){
+
+            this.src =
+                "https://via.placeholder.com/100?text=User";
+
+        };
+
+    }
+);
+
+
+/* =========================
+   CLEANUP
+========================= */
+
+window.addEventListener(
+    "beforeunload",
+    function(){
+
+        if(statusTimer){
+            clearInterval(statusTimer);
+        }
+
+        if(myHeartbeatTimer){
+            clearInterval(myHeartbeatTimer);
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
