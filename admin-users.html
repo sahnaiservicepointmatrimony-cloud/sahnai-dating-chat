@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin - All Users</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f5f6ff;
+    color:#222;
+}
+
+.topbar{
+    background:#4f46e5;
+    color:white;
+    padding:22px 15px;
+    text-align:center;
+    font-size:27px;
+    font-weight:bold;
+}
+
+.container{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    padding:18px 14px 40px;
+}
+
+.back-btn,
+.refresh-btn{
+    display:block;
+    width:100%;
+    padding:18px;
+    margin:15px 0;
+    border:none;
+    border-radius:35px;
+    font-size:19px;
+    font-weight:bold;
+    text-align:center;
+    text-decoration:none;
+    cursor:pointer;
+}
+
+.back-btn{
+    background:white;
+    color:#4f46e5;
+}
+
+.refresh-btn{
+    background:#4f46e5;
+    color:white;
+}
+
+.search{
+    width:100%;
+    padding:17px;
+    border:none;
+    border-radius:30px;
+    font-size:18px;
+    margin:15px 0;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.status{
+    background:white;
+    border-radius:20px;
+    padding:18px;
+    margin:18px 0;
+    text-align:center;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.success{
+    color:#16a34a;
+}
+
+.error{
+    color:#dc2626;
+}
+
+.info{
+    color:#555;
+}
+
+.total{
+    text-align:center;
+    font-size:28px;
+    margin:22px 0;
+}
+
+.card{
+    background:white;
+    border-radius:28px;
+    padding:24px 18px;
+    margin:20px 0;
+    text-align:center;
+    box-shadow:0 5px 22px rgba(0,0,0,.10);
+}
+
+.photo{
+    width:150px;
+    height:150px;
+    object-fit:cover;
+    border-radius:50%;
+    border:7px solid #f9a8d4;
+}
+
+.no-photo{
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    background:#eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:auto;
+    font-size:65px;
+}
+
+.name{
+    font-size:30px;
+    font-weight:bold;
+    margin:18px 0 12px;
+}
+
+.details{
+    font-size:19px;
+    line-height:1.8;
+    color:#666;
+}
+
+.status-user{
+    display:inline-block;
+    padding:12px 25px;
+    border-radius:30px;
+    margin:15px 0;
+    font-size:17px;
+    font-weight:bold;
+}
+
+.registered{
+    background:#dcfce7;
+    color:#15803d;
+}
+
+.blocked{
+    background:#fee2e2;
+    color:#b91c1c;
+}
+
+.admin-badge{
+    display:inline-block;
+    margin:5px 0 10px;
+    padding:9px 18px;
+    border-radius:25px;
+    background:#ede9fe;
+    color:#6d28d9;
+    font-weight:bold;
+}
+
+.profile-btn,
+.block-btn,
+.trash-btn,
+.unblock-btn{
+    display:block;
+    width:100%;
+    padding:17px;
+    border:none;
+    border-radius:35px;
+    margin-top:15px;
+    font-size:18px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-btn{
+    background:#e0e7ff;
+    color:#3730a3;
+}
+
+.block-btn{
+    background:#ef2929;
+    color:white;
+}
+
+.unblock-btn{
+    background:#16a34a;
+    color:white;
+}
+
+.trash-btn{
+    background:#991b1b;
+    color:white;
+}
+
+.empty{
+    background:white;
+    border-radius:28px;
+    padding:60px 20px;
+    text-align:center;
+}
+
+.empty-icon{
+    font-size:80px;
+}
+
+.empty-title{
+    font-size:30px;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.empty-text{
+    font-size:19px;
+    color:#777;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="topbar">
+
+👥 Admin - All Users
+
+</div>
+
+
+<div class="container">
+
+
+<a
+href="admin.html"
+class="back-btn">
+
+← Admin Panel पर वापस जाएँ
+
+</a>
+
+
+<button
+class="refresh-btn"
+onclick="loadUsers()">
+
+🔄 Users Refresh करें
+
+</button>
+
+
+<input
+id="searchBox"
+class="search"
+type="text"
+placeholder="🔍 Name, City, Profession से Search करें"
+oninput="renderUsers()">
+
+
+<div
+id="status"
+class="status info">
+
+⏳ Users load हो रहे हैं...
+
+</div>
+
+
+<div class="total">
+
+👥 Total Users:
+<span id="total">0</span>
+
+</div>
+
+
+<div id="userList"></div>
+
+
+</div>
+
+
+<script>
+
+let allUsers = [];
+
+let blockedIds =
+    new Set();
+
+let trashIds =
+    new Set();
+
+let adminUserId =
+    null;
+
+
+/* =====================================
+   START
+===================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    checkAdmin
+);
+
+
+/* =====================================
+   ADMIN CHECK
+===================================== */
+
+async function checkAdmin(){
+
+    try{
+
+        const {
+            data:sessionData,
+            error:sessionError
+        } =
+        await supabaseClient
+        .auth
+        .getSession();
+
+
+        if(sessionError){
+
+            throw sessionError;
+
+        }
+
+
+        const session =
+            sessionData.session;
+
+
+        if(!session){
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        adminUserId =
+            session.user.id;
+
+
+        const {
+            data:adminData,
+            error:adminError
+        } =
+        await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq(
+            "user_id",
+            adminUserId
+        )
+        .maybeSingle();
+
+
+        if(adminError){
+
+            throw adminError;
+
+        }
+
+
+        if(!adminData){
+
+            alert(
+                "❌ आपको Admin Panel की अनुमति नहीं है।"
+            );
+
+
+            await supabaseClient
+            .auth
+            .signOut();
+
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        await loadUsers();
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        showStatus(
+            "❌ Admin verification failed।",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================
+   LOAD USERS
+===================================== */
+
+async function loadUsers(){
+
+    showStatus(
+        "⏳ Users load हो रहे हैं...",
+        "info"
+    );
+
+
+    const {
+        data:sessionData,
+        error:sessionError
+    } =
+    await supabaseClient
+    .auth
+    .getSession();
+
+
+    if(
+        sessionError ||
+        !sessionData.session
+    ){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const currentUserId =
+        sessionData.session.user.id;
+
+
+    /* =================================
+       BLOCKED USERS
+    ================================= */
+
+    const {
+        data:blockData,
+        error:blockError
+    } =
+    await supabaseClient
+    .from("blocks")
+    .select("blocked_user_id")
+    .eq(
+        "blocker_id",
+        currentUserId
+    );
+
+
+    if(blockError){
+
+        console.error(
+            "Block load error:",
+            blockError
+        );
+
+        blockedIds =
+            new Set();
+
+    }
+    else{
+
+        blockedIds =
+            new Set(
+                (blockData || [])
+                .map(
+                    item =>
+                    item.blocked_user_id
+                )
+            );
+
+    }
+
+
+    /* =================================
+       TRASH USERS
+    ================================= */
+
+    const {
+        data:trashData,
+        error:trashError
+    } =
+    await supabaseClient
+    .from("trash_users")
+    .select("user_id");
+
+
+    if(trashError){
+
+        console.error(
+            "Trash load error:",
+            trashError
+        );
+
+        trashIds =
+            new Set();
+
+    }
+    else{
+
+        trashIds =
+            new Set(
+                (trashData || [])
+                .map(
+                    item =>
+                    item.user_id
+                )
+            );
+
+    }
+
+
+    /* =================================
+       ALL PROFILES
+       
+       IMPORTANT:
+       यहां Admin User को exclude
+       नहीं किया गया है।
+       
+       इसलिए Ram krishna भी दिखाई
+       देगा क्योंकि वह User भी है।
+    ================================= */
+
+    const {
+        data:profiles,
+        error:profileError
+    } =
+    await supabaseClient
+    .from("profiles")
+    .select(
+        "id,name,photo_url,age,gender,city,profession,bio,created_at"
+    )
+    .order(
+        "created_at",
+        {
+            ascending:false
+        }
+    );
+
+
+    if(profileError){
+
+        console.error(
+            profileError
+        );
+
+        showStatus(
+            "❌ Users load करने में समस्या हुई: "+
+            profileError.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Trash Users को All Users
+       से hide करेंगे।
+       
+       Admin User को hide नहीं करेंगे।
+    */
+
+    allUsers =
+        (profiles || [])
+        .filter(
+            user =>
+            !trashIds.has(user.id)
+        );
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        allUsers.length;
+
+
+    renderUsers();
+
+
+    showStatus(
+        "✅ All Users successfully load हो गए।",
+        "success"
+    );
+
+}
+
+
+/* =====================================
+   RENDER USERS
+===================================== */
+
+function renderUsers(){
+
+    const list =
+        document.getElementById(
+            "userList"
+        );
+
+
+    list.innerHTML = "";
+
+
+    const search =
+        document.getElementById(
+            "searchBox"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const filtered =
+        allUsers.filter(
+            user => {
+
+                const text =
+                    (
+                        (user.name || "") +
+                        " " +
+                        (user.city || "") +
+                        " " +
+                        (user.profession || "") +
+                        " " +
+                        (user.gender || "")
+                    )
+                    .toLowerCase();
+
+
+                return text.includes(
+                    search
+                );
+
+            }
+        );
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        filtered.length;
+
+
+    if(filtered.length === 0){
+
+        list.innerHTML = `
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                👥
+            </div>
+
+            <div class="empty-title">
+                कोई User नहीं मिला
+            </div>
+
+            <div class="empty-text">
+                Search बदलकर देखें।
+            </div>
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    filtered.forEach(
+        user =>
+        createUserCard(
+            user,
+            list
+        )
+    );
+
+}
+
+
+/* =====================================
+   USER CARD
+===================================== */
+
+function createUserCard(
+    user,
+    list
+){
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "card";
+
+
+    let photoHTML;
+
+
+    if(
+        user.photo_url &&
+        user.photo_url.trim() !== ""
+    ){
+
+        photoHTML = `
+
+        <img
+            src="${escapeHtml(
+                user.photo_url
+            )}"
+            class="photo"
+            alt="Profile">
+
+        `;
+
+    }
+    else{
+
+        photoHTML = `
+
+        <div class="no-photo">
+            👤
+        </div>
+
+        `;
+
+    }
+
+
+    const isBlocked =
+        blockedIds.has(
+            user.id
+        );
+
+
+    /*
+       अगर यह current Admin/User है
+       तो Admin badge दिखाएँ।
+    */
+
+    const isCurrentAdmin =
+        user.id === adminUserId;
+
+
+    card.innerHTML = `
+
+        ${photoHTML}
+
+
+        <div class="name">
+
+            ${escapeHtml(
+                user.name ||
+                "Unknown User"
+            )}
+
+        </div>
+
+
+        ${
+            isCurrentAdmin
+
+            ?
+
+            `
+            <div class="admin-badge">
+
+                🔐 Admin + User
+
+            </div>
+            `
+
+            :
+
+            ""
+
+        }
+
+
+        <div class="details">
+
+            ${
+                user.age
+                ?
+
+                "🎂 " +
+                escapeHtml(
+                    String(user.age)
+                ) +
+                " वर्ष<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                user.gender
+                ?
+
+                "👤 " +
+                escapeHtml(
+                    user.gender
+                ) +
+                "<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                user.city
+                ?
+
+                "📍 " +
+                escapeHtml(
+                    user.city
+                ) +
+                "<br>"
+
+                :
+
+                ""
+            }
+
+
+            ${
+                user.profession
+                ?
+
+                "💼 " +
+                escapeHtml(
+                    user.profession
+                )
+
+                :
+
+                ""
+            }
+
+        </div>
+
+
+        <div class="status-user ${
+            isBlocked
+            ? "blocked"
+            : "registered"
+        }">
+
+            ${
+                isBlocked
+                ?
+
+                "🔴 Blocked User"
+
+                :
+
+                "🟢 Registered User"
+
+            }
+
+        </div>
+
+
+        <button
+            class="profile-btn"
+            onclick="viewProfile(
+                '${user.id}'
+            )">
+
+            👤 Profile देखें
+
+        </button>
+
+
+        ${
+            isBlocked
+
+            ?
+
+            `
+            <button
+                class="unblock-btn"
+                onclick="unblockUser(
+                    '${user.id}'
+                )">
+
+                🟢 Unblock User
+
+            </button>
+            `
+
+            :
+
+            `
+            <button
+                class="block-btn"
+                onclick="blockUser(
+                    '${user.id}'
+                )">
+
+                🚫 Block User
+
+            </button>
+            `
+
+        }
+
+
+        <button
+            class="trash-btn"
+            onclick="sendToTrash(
+                '${user.id}',
+                '${escapeHtml(
+                    user.name ||
+                    "User"
+                )}'
+            )">
+
+            🗑️ Trash में भेजें
+
+        </button>
+
+    `;
+
+
+    list.appendChild(
+        card
+    );
+
+}
+
+
+/* =====================================
+   PROFILE
+===================================== */
+
+function viewProfile(id){
+
+    window.location.href =
+        "view-profile.html?id=" +
+        encodeURIComponent(id);
+
+}
+
+
+/* =====================================
+   BLOCK
+===================================== */
+
+async function blockUser(
+    userId
+){
+
+    const {
+        data:sessionData
+    } =
+    await supabaseClient
+    .auth
+    .getSession();
+
+
+    if(
+        !sessionData.session
+    ){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const currentUserId =
+        sessionData.session.user.id;
+
+
+    /*
+       Admin अपने ही account को
+       Block नहीं कर सकता।
+    */
+
+    if(
+        currentUserId === userId
+    ){
+
+        alert(
+            "❌ आप अपने Admin/User account को Block नहीं कर सकते।"
+        );
+
+        return;
+
+    }
+
+
+    const ok =
+        confirm(
+            "क्या आप इस User को Block करना चाहते हैं?"
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("blocks")
+    .insert({
+
+        blocker_id:
+            currentUserId,
+
+        blocked_user_id:
+            userId
+
+    });
+
+
+    if(error){
+
+        if(
+            error.code === "23505"
+        ){
+
+            alert(
+                "ℹ️ User पहले से Block है।"
+            );
+
+        }
+        else{
+
+            console.error(
+                error
+            );
+
+            alert(
+                "❌ Block करने में समस्या हुई।"
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ User Block हो गया।"
+    );
+
+
+    await loadUsers();
+
+}
+
+
+/* =====================================
+   UNBLOCK
+===================================== */
+
+async function unblockUser(
+    userId
+){
+
+    const {
+        data:sessionData
+    } =
+    await supabaseClient
+    .auth
+    .getSession();
+
+
+    if(
+        !sessionData.session
+    ){
+
+        window.location.href =
+            "login.html";
+
+        return;
+
+    }
+
+
+    const currentUserId =
+        sessionData.session.user.id;
+
+
+    const ok =
+        confirm(
+            "क्या आप इस User को Unblock करना चाहते हैं?"
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("blocks")
+    .delete()
+    .eq(
+        "blocker_id",
+        currentUserId
+    )
+    .eq(
+        "blocked_user_id",
+        userId
+    );
+
+
+    if(error){
+
+        console.error(
+            error
+        );
+
+        alert(
+            "❌ Unblock करने में समस्या हुई।"
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ User Unblock हो गया।"
+    );
+
+
+    await loadUsers();
+
+}
+
+
+/* =====================================
+   SEND TO TRASH
+===================================== */
+
+async function sendToTrash(
+    userId,
+    userName
+){
+
+    /*
+       Admin/User अपने account को
+       Trash में भेजने से रोकें।
+    */
+
+    if(
+        userId === adminUserId
+    ){
+
+        alert(
+            "❌ अपने Admin/User account को Trash में नहीं भेज सकते।"
+        );
+
+        return;
+
+    }
+
+
+    const ok =
+        confirm(
+            `क्या आप ${userName} को Trash में भेजना चाहते हैं?\n\nUser Permanent Delete नहीं होगा।`
+        );
+
+
+    if(!ok){
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+    await supabaseClient
+    .from("trash_users")
+    .insert({
+
+        user_id:
+            userId
+
+    });
+
+
+    if(error){
+
+        if(
+            error.code === "23505"
+        ){
+
+            alert(
+                "ℹ️ User पहले से Trash में है।"
+            );
+
+        }
+        else{
+
+            console.error(
+                error
+            );
+
+            alert(
+                "❌ User को Trash में भेजने में समस्या हुई।"
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    alert(
+        "✅ User Trash में चला गया।\n\nPermanent Delete नहीं हुआ है।"
+    );
+
+
+    await loadUsers();
+
+}
+
+
+/* =====================================
+   STATUS
+===================================== */
+
+function showStatus(
+    message,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "status"
+        );
+
+
+    box.className =
+        "status " +
+        type;
+
+
+    box.textContent =
+        message;
+
+}
+
+
+/* =====================================
+   SAFE HTML
+===================================== */
+
+function escapeHtml(value){
+
+    return String(value)
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
+}
+
+</script>
+
+</body>
+
+</html>
