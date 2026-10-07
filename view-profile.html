@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Profile - Connect</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  font-family:Arial,sans-serif;
+}
+
+body{
+  background:#fff5f8;
+  color:#333;
+  min-height:100vh;
+  padding-bottom:90px;
+}
+
+.topbar{
+  background:white;
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 12px rgba(0,0,0,.08);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.logo{
+  font-size:25px;
+  font-weight:bold;
+  color:#e32672;
+}
+
+.back-btn{
+  border:none;
+  background:#ffe4ef;
+  color:#d62268;
+  padding:11px 18px;
+  border-radius:25px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.container{
+  max-width:650px;
+  margin:auto;
+  padding:25px 16px;
+}
+
+.title{
+  text-align:center;
+  font-size:34px;
+  font-weight:bold;
+  margin:10px 0 5px;
+}
+
+.title span{
+  color:#e32672;
+}
+
+.subtitle{
+  text-align:center;
+  color:#777;
+  font-size:17px;
+  margin-bottom:25px;
+}
+
+.profile-card{
+  background:white;
+  border-radius:30px;
+  padding:28px 20px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+  text-align:center;
+}
+
+.photo{
+  width:180px;
+  height:180px;
+  border-radius:50%;
+  object-fit:cover;
+  border:7px solid #f39bc5;
+  background:#eee;
+}
+
+.name{
+  font-size:32px;
+  font-weight:bold;
+  margin-top:18px;
+  color:#222;
+}
+
+.status{
+  display:inline-block;
+  margin-top:10px;
+  padding:8px 18px;
+  background:#dcfce7;
+  color:#18834a;
+  border-radius:25px;
+  font-weight:bold;
+}
+
+.info{
+  margin-top:25px;
+  text-align:left;
+}
+
+.info-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-size:19px;
+  margin:15px 5px;
+  color:#555;
+}
+
+.info-icon{
+  width:35px;
+  text-align:center;
+  font-size:25px;
+}
+
+.bio-box{
+  margin-top:22px;
+  background:#fff7ed;
+  border-left:5px solid #f97316;
+  border-radius:16px;
+  padding:18px;
+  text-align:left;
+}
+
+.bio-title{
+  font-size:20px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.bio-text{
+  font-size:17px;
+  line-height:1.6;
+  color:#555;
+}
+
+.action{
+  width:100%;
+  border:none;
+  padding:16px;
+  margin-top:14px;
+  border-radius:30px;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.chat-btn{
+  background:#4f46e5;
+  color:white;
+}
+
+.shortlist-btn{
+  background:#ffe0ee;
+  color:#d62268;
+}
+
+.block-btn{
+  background:#fee2e2;
+  color:#dc2626;
+}
+
+.report-btn{
+  background:#fff0dc;
+  color:#e66b00;
+}
+
+.home-btn{
+  background:#f1f1f1;
+  color:#444;
+}
+
+.loading{
+  text-align:center;
+  padding:50px 10px;
+  font-size:20px;
+  color:#777;
+}
+
+.error{
+  background:white;
+  border-radius:25px;
+  padding:35px 20px;
+  text-align:center;
+  font-size:20px;
+  color:#d33;
+}
+
+.bottom-nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:78px;
+  background:white;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  box-shadow:0 -3px 15px rgba(0,0,0,.12);
+  z-index:20;
+}
+
+.nav-item{
+  text-align:center;
+  color:#777;
+  font-size:13px;
+  cursor:pointer;
+}
+
+.nav-item .icon{
+  display:block;
+  font-size:27px;
+  margin-bottom:3px;
+}
+
+@media(max-width:420px){
+  .title{
+    font-size:29px;
+  }
+
+  .photo{
+    width:155px;
+    height:155px;
+  }
+
+  .name{
+    font-size:28px;
+  }
+
+  .info-row{
+    font-size:17px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="logo">💖 Connect</div>
+
+  <button class="back-btn" onclick="goBack()">
+    ← Back
+  </button>
+</div>
+
+<div class="container">
+
+  <div class="title">
+    👤 <span>Profile</span>
+  </div>
+
+  <div class="subtitle">
+    Connect पर पूरी प्रोफाइल देखें
+  </div>
+
+  <div id="loading" class="loading">
+    ⏳ Profile load हो रही है...
+  </div>
+
+  <div id="errorBox" style="display:none;"></div>
+
+  <div id="profileCard" class="profile-card" style="display:none;">
+
+    <img id="profilePhoto"
+         class="photo"
+         src="https://via.placeholder.com/300?text=Profile"
+         alt="Profile">
+
+    <div id="profileName" class="name">
+      User
+    </div>
+
+    <div class="status">
+      🟢 Registered User
+    </div>
+
+    <div class="info">
+
+      <div class="info-row">
+        <div class="info-icon">🎂</div>
+        <div id="profileAge">उम्र उपलब्ध नहीं</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-icon">👤</div>
+        <div id="profileGender">Gender उपलब्ध नहीं</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-icon">📍</div>
+        <div id="profileCity">City उपलब्ध नहीं</div>
+      </div>
+
+      <div class="info-row">
+        <div class="info-icon">💼</div>
+        <div id="profileProfession">Profession उपलब्ध नहीं</div>
+      </div>
+
+    </div>
+
+    <div id="bioBox" class="bio-box" style="display:none;">
+      <div class="bio-title">
+        📝 About Me
+      </div>
+
+      <div id="profileBio" class="bio-text"></div>
+    </div>
+
+    <button class="action chat-btn" onclick="openChatWithUser()">
+      💬 Chat करें
+    </button>
+
+    <button id="shortlistButton"
+            class="action shortlist-btn"
+            onclick="toggleShortlist()">
+      ❤️ Shortlist करें
+    </button>
+
+    <button id="blockButton"
+            class="action block-btn"
+            onclick="toggleBlock()">
+      🚫 Block User
+    </button>
+
+    <button class="action report-btn"
+            onclick="reportUser()">
+      ⚠️ Report User
+    </button>
+
+    <button class="action home-btn"
+            onclick="goBack()">
+      ← वापस जाएँ
+    </button>
+
+  </div>
+
+</div>
+
+<!-- Bottom Navigation -->
+
+<div class="bottom-nav">
+
+  <div class="nav-item" onclick="goHome()">
+    <span class="icon">🏠</span>
+    Home
+  </div>
+
+  <div class="nav-item" onclick="goFind()">
+    <span class="icon">🔎</span>
+    Find
+  </div>
+
+  <div class="nav-item" onclick="goFriends()">
+    <span class="icon">❤️</span>
+    Friends
+  </div>
+
+  <div class="nav-item" onclick="goMessages()">
+    <span class="icon">💬</span>
+    Messages
+  </div>
+
+  <div class="nav-item" onclick="goAccount()">
+    <span class="icon">👤</span>
+    Account
+  </div>
+
+</div>
+
+
+<script>
+
+let currentUser = null;
+let profileId = null;
+let profileData = null;
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack(){
+  if(document.referrer){
+    history.back();
+  }else{
+    window.location.href="users.html";
+  }
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function goHome(){
+  window.location.href="index.html";
+}
+
+function goFind(){
+  window.location.href="users.html";
+}
+
+function goFriends(){
+  window.location.href="matches.html";
+}
+
+function goMessages(){
+  window.location.href="messages.html";
+}
+
+function goAccount(){
+  window.location.href="dashboard.html";
+}
+
+
+/* =========================
+   LOAD PROFILE
+========================= */
+
+async function loadProfile(){
+
+  try{
+
+    const {data:{user},error:userError}
+      = await supabaseClient.auth.getUser();
+
+    if(userError || !user){
+
+      window.location.href="login.html";
+      return;
+    }
+
+    currentUser=user;
+
+
+    const params=new URLSearchParams(
+      window.location.search
+    );
+
+    profileId=params.get("id");
+
+
+    if(!profileId){
+
+      showError("Profile ID नहीं मिला।");
+      return;
+    }
+
+
+    /* अपना profile इस page पर नहीं */
+
+    if(profileId===user.id){
+
+      window.location.href="profile.html";
+      return;
+    }
+
+
+    const {data,error}=await supabaseClient
+      .from("profiles")
+      .select(`
+        id,
+        name,
+        photo_url,
+        age,
+        gender,
+        city,
+        profession,
+        bio
+      `)
+      .eq("id",profileId)
+      .maybeSingle();
+
+
+    if(error){
+
+      console.log(error);
+
+      showError(
+        "Profile load नहीं हो सकी:<br>"+error.message
+      );
+
+      return;
+    }
+
+
+    if(!data){
+
+      showError("यह Profile उपलब्ध नहीं है।");
+      return;
+    }
+
+
+    profileData=data;
+
+    displayProfile(data);
+
+    await checkShortlist();
+
+    await checkBlock();
+
+  }catch(error){
+
+    console.log(error);
+
+    showError(
+      "कुछ समस्या हुई। कृपया फिर से कोशिश करें।"
+    );
+  }
+}
+
+
+/* =========================
+   DISPLAY PROFILE
+========================= */
+
+function displayProfile(profile){
+
+  document.getElementById("loading").style.display="none";
+
+  document.getElementById("profileCard").style.display="block";
+
+
+  const photo=document.getElementById("profilePhoto");
+
+  photo.src=
+    profile.photo_url ||
+    "https://via.placeholder.com/300?text=Profile";
+
+
+  photo.onerror=function(){
+
+    this.src=
+      "https://via.placeholder.com/300?text=Profile";
+
+  };
+
+
+  document.getElementById("profileName")
+    .textContent=profile.name || "User";
+
+
+  document.getElementById("profileAge")
+    .textContent=
+      profile.age
+      ? profile.age+" वर्ष"
+      : "उम्र उपलब्ध नहीं";
+
+
+  document.getElementById("profileGender")
+    .textContent=
+      profile.gender || "Gender उपलब्ध नहीं";
+
+
+  document.getElementById("profileCity")
+    .textContent=
+      profile.city || "City उपलब्ध नहीं";
+
+
+  document.getElementById("profileProfession")
+    .textContent=
+      profile.profession || "Profession उपलब्ध नहीं";
+
+
+  if(profile.bio && profile.bio.trim()){
+
+    document.getElementById("bioBox").style.display="block";
+
+    document.getElementById("profileBio")
+      .textContent=profile.bio;
+
+  }
+
+}
+
+
+/* =========================
+   CHAT
+========================= */
+
+function openChatWithUser(){
+
+  if(!profileData)return;
+
+  window.location.href=
+    "chat.html?id="+
+    encodeURIComponent(profileData.id)+
+    "&user="+
+    encodeURIComponent(profileData.name || "User");
+
+}
+
+
+/* =========================
+   SHORTLIST CHECK
+========================= */
+
+async function checkShortlist(){
+
+  try{
+
+    const {data,error}=await supabaseClient
+      .from("shortlists")
+      .select("id")
+      .eq("user_id",currentUser.id)
+      .eq("profile_id",profileId)
+      .maybeSingle();
+
+
+    if(error){
+
+      console.log("Shortlist check:",error.message);
+      return;
+    }
+
+
+    const button=
+      document.getElementById("shortlistButton");
+
+
+    if(data){
+
+      button.textContent="💖 Shortlist से हटाएँ";
+      button.style.background="#fee2e2";
+      button.style.color="#dc2626";
+
+    }else{
+
+      button.textContent="❤️ Shortlist करें";
+      button.style.background="#ffe0ee";
+      button.style.color="#d62268";
+
+    }
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+}
+
+
+/* =========================
+   TOGGLE SHORTLIST
+========================= */
+
+async function toggleShortlist(){
+
+  if(!currentUser || !profileId)return;
+
+
+  const button=
+    document.getElementById("shortlistButton");
+
+
+  button.disabled=true;
+
+
+  try{
+
+    const {data,error}=await supabaseClient
+      .from("shortlists")
+      .select("id")
+      .eq("user_id",currentUser.id)
+      .eq("profile_id",profileId)
+      .maybeSingle();
+
+
+    if(error){
+
+      alert(
+        "Shortlist check में समस्या: "+
+        error.message
+      );
+
+      return;
+    }
+
+
+    if(data){
+
+      const {error:deleteError}
+        =await supabaseClient
+        .from("shortlists")
+        .delete()
+        .eq("id",data.id);
+
+
+      if(deleteError){
+
+        alert(
+          "Shortlist हटाने में समस्या: "+
+          deleteError.message
+        );
+
+        return;
+      }
+
+
+      alert("Profile Shortlist से हटा दी गई।");
+
+    }else{
+
+      const {error:insertError}
+        =await supabaseClient
+        .from("shortlists")
+        .insert({
+
+          user_id:currentUser.id,
+          profile_id:profileId
+
+        });
+
+
+      if(insertError){
+
+        alert(
+          "Shortlist करने में समस्या: "+
+          insertError.message
+        );
+
+        return;
+      }
+
+
+      alert("❤️ Profile Shortlist में जोड़ दी गई।");
+
+    }
+
+
+    await checkShortlist();
+
+  }catch(error){
+
+    console.log(error);
+
+    alert("कुछ समस्या हुई।");
+
+  }finally{
+
+    button.disabled=false;
+
+  }
+
+}
+
+
+/* =========================
+   BLOCK CHECK
+========================= */
+
+async function checkBlock(){
+
+  try{
+
+    const {data,error}=await supabaseClient
+      .from("blocks")
+      .select("id")
+      .eq("blocker_id",currentUser.id)
+      .eq("blocked_user_id",profileId)
+      .maybeSingle();
+
+
+    if(error){
+
+      console.log("Block check:",error.message);
+      return;
+    }
+
+
+    const button=
+      document.getElementById("blockButton");
+
+
+    if(data){
+
+      button.textContent="✅ Unblock User";
+      button.style.background="#dcfce7";
+      button.style.color="#18834a";
+
+    }else{
+
+      button.textContent="🚫 Block User";
+      button.style.background="#fee2e2";
+      button.style.color="#dc2626";
+
+    }
+
+  }catch(error){
+
+    console.log(error);
+
+  }
+
+}
+
+
+/* =========================
+   BLOCK / UNBLOCK
+========================= */
+
+async function toggleBlock(){
+
+  if(!currentUser || !profileId)return;
+
+
+  const button=
+    document.getElementById("blockButton");
+
+
+  try{
+
+    const {data,error}=await supabaseClient
+      .from("blocks")
+      .select("id")
+      .eq("blocker_id",currentUser.id)
+      .eq("blocked_user_id",profileId)
+      .maybeSingle();
+
+
+    if(error){
+
+      alert(
+        "Block check में समस्या: "+
+        error.message
+      );
+
+      return;
+    }
+
+
+    if(data){
+
+      const {error:deleteError}
+        =await supabaseClient
+        .from("blocks")
+        .delete()
+        .eq("id",data.id);
+
+
+      if(deleteError){
+
+        alert(
+          "Unblock करने में समस्या: "+
+          deleteError.message
+        );
+
+        return;
+      }
+
+
+      alert("✅ User Unblock कर दिया गया।");
+
+    }else{
+
+      const confirmBlock=
+        confirm(
+          "क्या आप इस User को Block करना चाहते हैं?"
+        );
+
+
+      if(!confirmBlock)return;
+
+
+      const {error:insertError}
+        =await supabaseClient
+        .from("blocks")
+        .insert({
+
+          blocker_id:currentUser.id,
+          blocked_user_id:profileId
+
+        });
+
+
+      if(insertError){
+
+        alert(
+          "Block करने में समस्या: "+
+          insertError.message
+        );
+
+        return;
+      }
+
+
+      alert(
+        "🚫 User Block कर दिया गया।"
+      );
+
+    }
+
+
+    await checkBlock();
+
+  }catch(error){
+
+    console.log(error);
+
+    alert("कुछ समस्या हुई।");
+
+  }
+
+}
+
+
+/* =========================
+   REPORT USER
+========================= */
+
+async function reportUser(){
+
+  if(!currentUser || !profileId)return;
+
+
+  const reason=
+    prompt(
+      "Report का कारण लिखें:\n\n"+
+      "उदाहरण: Fake Profile, Abusive Behaviour, Spam"
+    );
+
+
+  if(!reason || !reason.trim()){
+
+    return;
+  }
+
+
+  try{
+
+    const {error}=await supabaseClient
+      .from("reports")
+      .insert({
+
+        reporter_id:currentUser.id,
+        reported_user_id:profileId,
+        reason:reason.trim()
+
+      });
+
+
+    if(error){
+
+      alert(
+        "Report भेजने में समस्या: "+
+        error.message
+      );
+
+      return;
+    }
+
+
+    alert(
+      "✅ Report सफलतापूर्वक भेज दी गई।\n\n"+
+      "Admin इसकी जाँच कर सकता है।"
+    );
+
+
+  }catch(error){
+
+    console.log(error);
+
+    alert("Report भेजने में समस्या हुई।");
+
+  }
+
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+function showError(message){
+
+  document.getElementById("loading").style.display="none";
+
+  const box=document.getElementById("errorBox");
+
+  box.style.display="block";
+
+  box.className="error";
+
+  box.innerHTML=
+    "❌ "+message+
+    "<br><br>"+
+    "<button class='action home-btn' onclick='goFind()'>"+
+    "🔎 वापस Find People"+
+    "</button>";
+
+}
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    loadProfile();
+
+  }
+);
+
+</script>
+
+</body>
+</html>
