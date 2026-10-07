@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Admin Reports - Dating App</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="supabase-config.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+}
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f6ff;
+    color:#222;
+}
+
+/* HEADER */
+
+.header{
+    width:100%;
+    background:#f97316;
+    color:white;
+    padding:20px 15px;
+    text-align:center;
+}
+
+.header h1{
+    margin:0;
+    font-size:27px;
+}
+
+/* CONTAINER */
+
+.container{
+    width:100%;
+    max-width:700px;
+    margin:auto;
+    padding:18px 14px 40px;
+}
+
+/* BUTTONS */
+
+.back-btn,
+.refresh-btn{
+    display:block;
+    width:100%;
+    border:none;
+    text-align:center;
+    padding:16px;
+    border-radius:35px;
+    font-size:18px;
+    font-weight:bold;
+    margin-bottom:14px;
+    cursor:pointer;
+}
+
+.back-btn{
+    background:white;
+    color:#4f46e5;
+    text-decoration:none;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+.refresh-btn{
+    background:#4f46e5;
+    color:white;
+}
+
+.refresh-btn:disabled{
+    opacity:.6;
+}
+
+/* STATUS */
+
+.status{
+    width:100%;
+    background:white;
+    border-radius:18px;
+    padding:14px;
+    text-align:center;
+    margin-bottom:12px;
+    font-size:16px;
+    font-weight:bold;
+    box-shadow:0 3px 12px rgba(0,0,0,.06);
+}
+
+.status-success{
+    color:#16a34a;
+}
+
+.status-error{
+    color:#dc2626;
+}
+
+.status-loading{
+    color:#777;
+}
+
+/* COUNT */
+
+.count{
+    text-align:center;
+    color:#555;
+    font-size:17px;
+    margin:10px 0 18px;
+}
+
+/* REPORT CARD */
+
+.report-card{
+    width:100%;
+    background:white;
+    border-radius:25px;
+    padding:22px 16px;
+    margin-bottom:22px;
+    box-shadow:0 6px 25px rgba(0,0,0,.10);
+}
+
+/* TITLE */
+
+.report-title{
+    text-align:center;
+    color:#f97316;
+    font-size:23px;
+    font-weight:bold;
+    margin-bottom:18px;
+}
+
+/* PHOTO */
+
+.report-photo{
+    display:block;
+    width:120px;
+    height:120px;
+    margin:0 auto 14px;
+    border-radius:50%;
+    object-fit:cover;
+    border:5px solid #ffedd5;
+    background:#eee;
+}
+
+/* INFO */
+
+.info{
+    color:#555;
+    font-size:17px;
+    line-height:1.6;
+    margin:9px 0;
+}
+
+/* REASON */
+
+.reason{
+    background:#fff7ed;
+    border-left:5px solid #f97316;
+    border-radius:12px;
+    padding:15px;
+    margin:18px 0;
+    color:#444;
+    font-size:17px;
+    line-height:1.5;
+}
+
+/* DATE */
+
+.date{
+    color:#888;
+    font-size:14px;
+    margin-top:12px;
+    line-height:1.5;
+}
+
+/* BUTTON AREA */
+
+.buttons{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:18px;
+}
+
+/* CARD BUTTONS */
+
+.profile-btn,
+.block-btn,
+.delete-btn{
+    width:100%;
+    border:none;
+    padding:15px;
+    border-radius:30px;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-btn{
+    background:#e0e7ff;
+    color:#3730a3;
+}
+
+.block-btn{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+.delete-btn{
+    background:#333;
+    color:white;
+}
+
+.profile-btn:disabled,
+.block-btn:disabled,
+.delete-btn:disabled{
+    opacity:.6;
+}
+
+/* EMPTY */
+
+.empty-box{
+    width:100%;
+    background:white;
+    padding:45px 20px;
+    border-radius:25px;
+    text-align:center;
+    box-shadow:0 5px 20px rgba(0,0,0,.08);
+}
+
+.empty-icon{
+    font-size:60px;
+}
+
+.empty-title{
+    font-size:26px;
+    font-weight:bold;
+    margin:15px 0 10px;
+}
+
+.empty-text{
+    color:#777;
+    font-size:17px;
+    line-height:1.5;
+}
+
+/* ERROR */
+
+.error-box{
+    width:100%;
+    background:#fee2e2;
+    color:#b91c1c;
+    padding:22px;
+    border-radius:20px;
+    font-size:16px;
+    line-height:1.6;
+    word-break:break-word;
+}
+
+/* MOBILE */
+
+@media(max-width:500px){
+
+    .header h1{
+        font-size:24px;
+    }
+
+    .container{
+        padding:15px 12px 35px;
+    }
+
+    .report-photo{
+        width:110px;
+        height:110px;
+    }
+
+    .report-title{
+        font-size:22px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- HEADER -->
+
+<div class="header">
+
+<h1>
+⚠️ Admin Reports
+</h1>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- BACK -->
+
+<a
+href="admin.html"
+class="back-btn">
+
+← Admin Panel पर वापस जाएँ
+
+</a>
+
+
+<!-- REFRESH -->
+
+<button
+id="refreshBtn"
+class="refresh-btn">
+
+🔄 Reports Refresh करें
+
+</button>
+
+
+<!-- STATUS -->
+
+<div
+id="statusBox"
+class="status status-loading">
+
+⏳ Reports load हो रही हैं...
+
+</div>
+
+
+<!-- COUNT -->
+
+<div
+id="countBox"
+class="count">
+
+🚨 Total Reports: ...
+
+</div>
+
+
+<!-- REPORT LIST -->
+
+<div id="reportList">
+
+<div class="empty-box">
+
+<div class="empty-icon">
+⏳
+</div>
+
+<div class="empty-title">
+Loading...
+</div>
+
+<div class="empty-text">
+Reports लोड हो रही हैं...
+</div>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+/* =========================
+VARIABLES
+========================= */
+
+let reportsData = [];
+
+
+/* =========================
+START
+========================= */
+
+document.addEventListener(
+"DOMContentLoaded",
+async function(){
+
+try{
+
+/* SUPABASE CHECK */
+
+if(
+typeof supabaseClient ===
+"undefined"
+){
+
+showStatus(
+"❌ Supabase connection नहीं मिला।",
+"error"
+);
+
+return;
+
+}
+
+
+/* LOGIN CHECK */
+
+const {
+data:userData,
+error:userError
+}
+=
+await supabaseClient.auth.getUser();
+
+
+if(
+userError ||
+!userData ||
+!userData.user
+){
+
+window.location.href =
+"login.html";
+
+return;
+
+}
+
+
+/* REFRESH BUTTON */
+
+document
+.getElementById("refreshBtn")
+.addEventListener(
+"click",
+loadReports
+);
+
+
+/* FIRST LOAD */
+
+await loadReports();
+
+}
+catch(error){
+
+console.error(
+"Start Error:",
+error
+);
+
+showStatus(
+"❌ Page load करने में समस्या।",
+"error"
+);
+
+}
+
+});
+
+
+/* =========================
+LOAD REPORTS
+========================= */
+
+async function loadReports(){
+
+const list =
+document.getElementById(
+"reportList"
+);
+
+const refreshBtn =
+document.getElementById(
+"refreshBtn"
+);
+
+
+list.innerHTML = `
+
+<div class="empty-box">
+
+<div class="empty-icon">
+⏳
+</div>
+
+<div class="empty-title">
+Loading...
+</div>
+
+<div class="empty-text">
+Reports लोड हो रही हैं...
+</div>
+
+</div>
+
+`;
+
+
+refreshBtn.disabled = true;
+
+
+showStatus(
+"⏳ Reports load हो रही हैं...",
+"loading"
+);
+
+
+try{
+
+
+/* GET REPORTS */
+
+const {
+data,
+error
+}
+=
+await supabaseClient
+
+.from("reports")
+
+.select(
+"id,reporter_id,reporter_name,reported_user_id,reason,created_at"
+)
+
+.order(
+"created_at",
+{
+ascending:false
+}
+);
+
+
+if(error){
+
+throw error;
+
+}
+
+
+reportsData =
+data || [];
+
+
+/* COUNT */
+
+document.getElementById(
+"countBox"
+).textContent =
+"🚨 Total Reports: " +
+reportsData.length;
+
+
+/* NO REPORT */
+
+if(
+reportsData.length === 0
+){
+
+list.innerHTML = `
+
+<div class="empty-box">
+
+<div class="empty-icon">
+✅
+</div>
+
+<div class="empty-title">
+कोई Report नहीं है
+</div>
+
+<div class="empty-text">
+अभी किसी User की कोई Report Pending नहीं है।
+</div>
+
+</div>
+
+`;
+
+showStatus(
+"✅ कोई Report Pending नहीं है।",
+"success"
+);
+
+refreshBtn.disabled = false;
+
+return;
+
+}
+
+
+/* CLEAR */
+
+list.innerHTML = "";
+
+
+/* CREATE CARDS */
+
+for(
+const report of reportsData
+){
+
+await createReportCard(
+report,
+list
+);
+
+}
+
+
+/* SUCCESS */
+
+showStatus(
+"✅ Reports successfully load हो गईं।",
+"success"
+);
+
+
+refreshBtn.disabled = false;
+
+
+}
+catch(error){
+
+console.error(
+"Reports Error:",
+error
+);
+
+
+list.innerHTML = `
+
+<div class="error-box">
+
+❌ Reports load नहीं हो पाईं।
+
+<br><br>
+
+<b>Error:</b>
+
+<br><br>
+
+${escapeHtml(
+error.message || error
+)}
+
+</div>
+
+`;
+
+
+showStatus(
+"❌ Reports load करने में समस्या।",
+"error"
+);
+
+
+refreshBtn.disabled = false;
+
+}
+
+}
+
+
+/* =========================
+CREATE REPORT CARD
+========================= */
+
+async function createReportCard(
+report,
+list
+){
+
+let profile = null;
+
+
+/* GET REPORTED PROFILE */
+
+const {
+data:profileData,
+error:profileError
+}
+=
+await supabaseClient
+
+.from("profiles")
+
+.select(
+"id,name,age,gender,city,profession,photo_url,bio"
+)
+
+.eq(
+"id",
+report.reported_user_id
+)
+
+.maybeSingle();
+
+
+if(profileError){
+
+console.log(
+"Profile Error:",
+profileError.message
+);
+
+}
+
+
+profile =
+profileData || null;
+
+
+/* USER DATA */
+
+const reportedName =
+profile?.name ||
+"Unknown User";
+
+
+const photo =
+profile?.photo_url ||
+"https://via.placeholder.com/300?text=User";
+
+
+/* DATE */
+
+let reportDate =
+"";
+
+
+if(
+report.created_at
+){
+
+reportDate =
+new Date(
+report.created_at
+).toLocaleString(
+"hi-IN"
+);
+
+}
+
+
+/* =========================
+CARD
+========================= */
+
+const card =
+document.createElement("div");
+
+card.className =
+"report-card";
+
+card.id =
+"report-" +
+report.id;
+
+
+/* TITLE */
+
+const title =
+document.createElement("div");
+
+title.className =
+"report-title";
+
+title.textContent =
+"⚠️ User Report";
+
+card.appendChild(
+title
+);
+
+
+/* PHOTO */
+
+const img =
+document.createElement("img");
+
+img.className =
+"report-photo";
+
+img.src =
+photo;
+
+img.alt =
+reportedName;
+
+img.onerror =
+function(){
+
+this.src =
+"https://via.placeholder.com/300?text=User";
+
+};
+
+card.appendChild(
+img
+);
+
+
+/* REPORTER */
+
+addInfo(
+card,
+"👤 Reporter: ",
+report.reporter_name ||
+"Unknown"
+);
+
+
+/* REPORTED USER */
+
+addInfo(
+card,
+"🚨 Reported User: ",
+reportedName
+);
+
+
+/* AGE */
+
+if(
+profile?.age
+){
+
+addInfo(
+card,
+"🎂 Age: ",
+profile.age
+);
+
+}
+
+
+/* GENDER */
+
+if(
+profile?.gender
+){
+
+addInfo(
+card,
+"👤 Gender: ",
+profile.gender
+);
+
+}
+
+
+/* CITY */
+
+if(
+profile?.city
+){
+
+addInfo(
+card,
+"📍 City: ",
+profile.city
+);
+
+}
+
+
+/* PROFESSION */
+
+if(
+profile?.profession
+){
+
+addInfo(
+card,
+"💼 Profession: ",
+profile.profession
+);
+
+}
+
+
+/* REASON */
+
+const reason =
+document.createElement("div");
+
+reason.className =
+"reason";
+
+
+const reasonTitle =
+document.createElement("b");
+
+reasonTitle.textContent =
+"📝 Report Reason:";
+
+
+reason.appendChild(
+reasonTitle
+);
+
+
+const reasonText =
+document.createElement("div");
+
+reasonText.style.marginTop =
+"10px";
+
+reasonText.textContent =
+report.reason ||
+"Reason नहीं दिया गया";
+
+
+reason.appendChild(
+reasonText
+);
+
+
+card.appendChild(
+reason
+);
+
+
+/* DATE */
+
+const date =
+document.createElement("div");
+
+date.className =
+"date";
+
+date.textContent =
+"🕒 " +
+reportDate;
+
+card.appendChild(
+date
+);
+
+
+/* BUTTON AREA */
+
+const buttons =
+document.createElement("div");
+
+buttons.className =
+"buttons";
+
+
+/* PROFILE BUTTON */
+
+const profileButton =
+document.createElement("button");
+
+profileButton.className =
+"profile-btn";
+
+profileButton.textContent =
+"👤 पूरी Profile देखें";
+
+profileButton.onclick =
+function(){
+
+viewProfile(
+report.reported_user_id
+);
+
+};
+
+buttons.appendChild(
+profileButton
+);
+
+
+/* BLOCK BUTTON */
+
+const blockButton =
+document.createElement("button");
+
+blockButton.className =
+"block-btn";
+
+blockButton.textContent =
+"🚫 User Global Block करें";
+
+blockButton.onclick =
+function(){
+
+blockUser(
+report.reported_user_id,
+reportedName,
+blockButton
+);
+
+};
+
+buttons.appendChild(
+blockButton
+);
+
+
+/* DELETE BUTTON */
+
+const deleteButton =
+document.createElement("button");
+
+deleteButton.className =
+"delete-btn";
+
+deleteButton.textContent =
+"🗑️ Report Delete करें";
+
+deleteButton.onclick =
+function(){
+
+deleteReport(
+report.id,
+deleteButton
+);
+
+};
+
+buttons.appendChild(
+deleteButton
+);
+
+
+card.appendChild(
+buttons
+);
+
+
+/* ADD CARD */
+
+list.appendChild(
+card
+);
+
+}
+
+
+/* =========================
+ADD INFO
+========================= */
+
+function addInfo(
+card,
+label,
+value
+){
+
+const div =
+document.createElement("div");
+
+div.className =
+"info";
+
+
+const bold =
+document.createElement("b");
+
+bold.textContent =
+label;
+
+
+div.appendChild(
+bold
+);
+
+
+const text =
+document.createTextNode(
+value || ""
+);
+
+
+div.appendChild(
+text
+);
+
+
+card.appendChild(
+div
+);
+
+}
+
+
+/* =========================
+VIEW PROFILE
+========================= */
+
+function viewProfile(
+userId
+){
+
+window.location.href =
+"view-profile.html?id=" +
+encodeURIComponent(
+userId
+);
+
+}
+
+
+/* =========================
+GLOBAL BLOCK USER
+========================= */
+
+async function blockUser(
+userId,
+userName,
+button
+){
+
+const ok =
+confirm(
+"क्या आप " +
+userName +
+" को Global Block करना चाहते हैं?"
+);
+
+
+if(!ok){
+
+return;
+
+}
+
+
+button.disabled = true;
+
+button.textContent =
+"⏳ Block हो रहा है...";
+
+
+try{
+
+
+/* CHECK EXISTING BLOCK */
+
+const {
+data:existing,
+error:checkError
+}
+=
+await supabaseClient
+
+.from("admin_blocked_users")
+
+.select("id")
+
+.eq(
+"user_id",
+userId
+)
+.maybeSingle();
+
+
+if(checkError){
+
+throw checkError;
+
+}
+
+
+/* ALREADY BLOCKED */
+
+if(existing){
+
+alert(
+"⚠️ " +
+userName +
+" पहले से Global Block है।"
+);
+
+button.disabled = false;
+
+button.textContent =
+"🚫 User Global Block करें";
+
+return;
+
+}
+
+
+/* INSERT BLOCK */
+
+const {
+error
+}
+=
+await supabaseClient
+
+.from("admin_blocked_users")
+
+.insert({
+user_id:userId
+});
+
+
+if(error){
+
+throw error;
+
+}
+
+
+/* SUCCESS */
+
+alert(
+"✅ " +
+userName +
+" को Global Block कर दिया गया।"
+);
+
+
+/* RELOAD */
+
+await loadReports();
+
+
+}
+catch(error){
+
+console.error(
+"Global Block Error:",
+error
+);
+
+
+button.disabled = false;
+
+button.textContent =
+"🚫 User Global Block करें";
+
+
+alert(
+"❌ User Global Block नहीं हुआ।\n\n" +
+(error.message || error)
+);
+
+}
+
+}
+
+
+/* =========================
+DELETE REPORT
+========================= */
+
+async function deleteReport(
+reportId,
+button
+){
+
+const ok =
+confirm(
+"क्या आप इस Report को Delete करना चाहते हैं?"
+);
+
+
+if(!ok){
+
+return;
+
+}
+
+
+button.disabled = true;
+
+button.textContent =
+"⏳ Delete हो रहा है...";
+
+
+try{
+
+
+/* DELETE REPORT */
+
+const {
+error
+}
+=
+await supabaseClient
+
+.from("reports")
+
+.delete()
+
+.eq(
+"id",
+reportId
+);
+
+
+if(error){
+
+throw error;
+
+}
+
+
+/* SUCCESS */
+
+alert(
+"✅ Report Delete हो गई।"
+);
+
+
+/* RELOAD */
+
+await loadReports();
+
+
+}
+catch(error){
+
+console.error(
+"Delete Report Error:",
+error
+);
+
+
+button.disabled = false;
+
+button.textContent =
+"🗑️ Report Delete करें";
+
+
+alert(
+"❌ Report Delete नहीं हुई।\n\n" +
+(error.message || error)
+);
+
+}
+
+}
+
+
+/* =========================
+STATUS
+========================= */
+
+function showStatus(
+message,
+type
+){
+
+const box =
+document.getElementById(
+"statusBox"
+);
+
+
+box.className =
+"status";
+
+
+if(
+type === "success"
+){
+
+box.classList.add(
+"status-success"
+);
+
+}
+
+
+if(
+type === "error"
+){
+
+box.classList.add(
+"status-error"
+);
+
+}
+
+
+if(
+type === "loading"
+){
+
+box.classList.add(
+"status-loading"
+);
+
+}
+
+
+box.textContent =
+message;
+
+}
+
+
+/* =========================
+ESCAPE
+========================= */
+
+function escapeHtml(
+text
+){
+
+const div =
+document.createElement("div");
+
+div.textContent =
+text || "";
+
+return div.innerHTML;
+
+}
+
+</script>
+
+</body>
+
+</html>
